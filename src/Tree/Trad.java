@@ -31,7 +31,9 @@ public class Trad {
             while (notPlaced){
                 int check = random.nextInt(currentNode.getChildren().size()+1);
                 if(check==currentNode.getChildren().size()){
-                    Edge edge = currentNode.addChild(new Node(i));
+                    Node newNode = new Node(i);
+                    Edge edge = currentNode.addChild(newNode);
+                    allNodes.put(newNode.getId(),newNode);
                     allEdges.put(edge.getId(),edge);
                     notPlaced = false;
                 }
@@ -40,6 +42,8 @@ public class Trad {
                 }
             }
         }
+
+        //allEdges.put("1-0",new Edge(allNodes.get(1),allNodes.get(0)));
         printLog();
     }
 

@@ -4,18 +4,14 @@ import java.util.Map;
 
 import javax.swing.JFrame;
 
-import edu.uci.ics.jung.algorithms.layout.FRLayout;
-import edu.uci.ics.jung.algorithms.layout.Layout;
-import edu.uci.ics.jung.algorithms.layout.RadialTreeLayout;
+import edu.uci.ics.jung.algorithms.layout.*;
 import edu.uci.ics.jung.graph.*;
-
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.DefaultModalGraphMouse;
 import edu.uci.ics.jung.visualization.control.ModalGraphMouse;
 import edu.uci.ics.jung.visualization.renderers.Renderer;
 import org.apache.commons.collections15.Transformer;
 
-import static java.lang.Thread.sleep;
 
 public class Test {
     public static void main(String[] args) {
@@ -23,7 +19,7 @@ public class Test {
 
 
      Trad trad = new Trad();
-        trad.buildTree(20);
+        trad.buildTree(500);
        JFrame frame3 = new JFrame("Multi-agents");
 
         Graph<Integer, String> g = new DelegateForest<>();
@@ -39,6 +35,7 @@ public class Test {
         }
 
 
+
         Layout<Integer, String> layout3 = new RadialTreeLayout<>((Forest<Integer, String>) g);
         VisualizationViewer<Integer, String> vv3 = new VisualizationViewer<>(layout3);
 
@@ -46,29 +43,25 @@ public class Test {
         vv3.setGraphMouse(graphMouse3);
         graphMouse3.setMode(ModalGraphMouse.Mode.PICKING);
 
-        Transformer<Integer, String> transformer = new Transformer<Integer, String>()
-        {
+        Transformer<Integer, String> transformer = new Transformer<Integer, String>() {
 
             @Override
             public String transform(Integer integer) {
-                return null;
+                return String.valueOf(integer);
             }
         };
         vv3.getRenderContext().setVertexLabelTransformer(transformer);
 
         vv3.getRenderer().getVertexLabelRenderer().setPosition(Renderer.VertexLabel.Position.CNTR);
 
-
-
-
         frame3.getContentPane().add(vv3);
+        frame3.setSize(1500, 1500);
         frame3.pack();
-        frame3.setSize(1000, 1000);
         frame3.setVisible(true);
     }
 
-
-}}
+}
+}
 
 
 
