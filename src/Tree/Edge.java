@@ -5,6 +5,10 @@ public class Edge {
     private Node child;
     private String id;
 
+    public Edge(){
+
+    }
+
     public Edge(Node parent, Node child){
         this.parent=parent;
         this.child=child;
