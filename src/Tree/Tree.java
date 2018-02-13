@@ -13,6 +13,10 @@ public class Tree {
 
     }
 
+    /**
+     * Method that builds the Tree with a number of nodes equal to amountOfNodes.
+     * @param amountOfNodes
+     */
     public void buildTree(int amountOfNodes){
         Node root = new Node(0);
         allNodes.put(0,root);

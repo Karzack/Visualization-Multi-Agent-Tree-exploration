@@ -1,4 +1,6 @@
-package Tree;
+package GUI;
+
+import Tree.Tree;
 
 public class Main {
 
