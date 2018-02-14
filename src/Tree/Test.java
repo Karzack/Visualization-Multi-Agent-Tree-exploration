@@ -1,8 +1,11 @@
 package Tree;
 
+import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Ellipse2D;
 import java.util.Map;
 
-import javax.swing.JFrame;
+import javax.swing.*;
 
 import edu.uci.ics.jung.algorithms.layout.*;
 import edu.uci.ics.jung.graph.*;
@@ -19,10 +22,11 @@ public class Test {
 
 
      Trad trad = new Trad();
-        trad.buildTree(500);
+        trad.buildTree(50);
        JFrame frame3 = new JFrame("Multi-agents");
 
         Graph<Integer, String> g = new DelegateForest<>();
+
         for (Map.Entry<Integer,Node> nodes: trad.getAllNodes().entrySet())
         {
 
@@ -49,10 +53,27 @@ public class Test {
             public String transform(Integer integer) {
                 return String.valueOf(integer);
             }
-        };
-        vv3.getRenderContext().setVertexLabelTransformer(transformer);
 
+        };
+            // Transformer maps the vertex number to a vertex property
+            Transformer<Integer,Paint> vertexColor = new Transformer<Integer,Paint>() {
+                public Paint transform(Integer i) {
+                    if(i == 0) return Color.GREEN;
+                    return Color.RED;
+                }
+            };
+
+            Transformer<Integer,Shape> vertexSize = new Transformer<Integer,Shape>(){
+                public Shape transform(Integer i){
+                    Ellipse2D circle = new Ellipse2D.Double(0, 0, 8, 8);
+                    return circle;
+                }
+            };
+
+        vv3.getRenderContext().setVertexLabelTransformer(transformer);
+        vv3.getRenderContext().setVertexShapeTransformer(vertexSize);
         vv3.getRenderer().getVertexLabelRenderer().setPosition(Renderer.VertexLabel.Position.CNTR);
+        vv3.getRenderContext().setVertexFillPaintTransformer(vertexColor);
 
         frame3.getContentPane().add(vv3);
         frame3.setSize(1500, 1500);
@@ -61,6 +82,7 @@ public class Test {
     }
 
 }
+
 }
 
 
