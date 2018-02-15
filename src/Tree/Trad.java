@@ -8,6 +8,13 @@ public class Trad {
     private HashMap<Integer,Node> allNodes = new HashMap<Integer,Node>();
     private HashMap<String,Edge> allEdges = new HashMap<String,Edge>();
 
+    public HashMap<Integer, Node> getAllNodes() {
+        return allNodes;
+    }
+
+    public HashMap<String, Edge> getAllEdges() {
+        return allEdges;
+    }
 
     public Trad(){
 
