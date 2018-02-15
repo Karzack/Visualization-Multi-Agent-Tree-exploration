@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="GUI.GUI">
+  <grid id="27dc6" binding="mainPanel" layout-manager="BorderLayout" hgap="0" vgap="0">
+    <constraints>
+      <xy x="20" y="20" width="500" height="1028"/>
+    </constraints>
+    <properties>
+      <opaque value="true"/>
+      <preferredSize width="1500" height="1000"/>
+    </properties>
+    <border type="none"/>
+    <children>
+      <grid id="f0c39" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
+        <constraints border-constraint="East"/>
+        <properties>
+          <preferredSize width="200" height="0"/>
+        </properties>
+        <border type="line" title="Nodes">
+          <color color="-16777216"/>
+        </border>
+        <children>
+          <component id="ff0d7" class="javax.swing.JLabel">
+            <constraints/>
+            <properties>
+              <preferredSize width="60" height="16"/>
+              <text value="Nodes"/>
+              <verticalAlignment value="0"/>
+            </properties>
+          </component>
+          <component id="ad122" class="javax.swing.JTextPane" binding="textPane2" default-binding="true">
+            <constraints/>
+            <properties/>
+          </component>
+          <component id="1adfc" class="javax.swing.JTextField" binding="nodes">
+            <constraints/>
+            <properties>
+              <preferredSize width="60" height="30"/>
+            </properties>
+          </component>
+          <component id="bae95" class="javax.swing.JButton" binding="drawBtn">
+            <constraints/>
+            <properties>
+              <label value="Draw"/>
+              <preferredSize width="100" height="27"/>
+              <text value="Draw"/>
+            </properties>
+          </component>
+          <component id="b0fc6" class="javax.swing.JLabel">
+            <constraints/>
+            <properties>
+              <preferredSize width="50" height="16"/>
+              <text value="Agents"/>
+            </properties>
+          </component>
+          <component id="56b30" class="javax.swing.JTextField" binding="agents">
+            <constraints/>
+            <properties>
+              <preferredSize width="50" height="30"/>
+            </properties>
+          </component>
+          <component id="4ef84" class="javax.swing.JButton" binding="agentsBtn">
+            <constraints/>
+            <properties>
+              <label value="draw"/>
+              <text value="draw"/>
+            </properties>
+          </component>
+          <component id="a2b9b" class="javax.swing.JTextPane" binding="textPane1" default-binding="true">
+            <constraints/>
+            <properties/>
+          </component>
+        </children>
+      </grid>
+      <grid id="f4be1" binding="maps" layout-manager="BorderLayout" hgap="0" vgap="0">
+        <constraints border-constraint="Center"/>
+        <properties>
+          <opaque value="true"/>
+          <preferredSize width="900" height="0"/>
+        </properties>
+        <border type="line" title="Map">
+          <color color="-16777216"/>
+        </border>
+        <children/>
+      </grid>
+    </children>
+  </grid>
+</form>
