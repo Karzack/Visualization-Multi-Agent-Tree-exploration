@@ -7,11 +7,11 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="jung-graph-impl-2.0" level="project" />
-    <orderEntry type="library" name="jung-algorithms-2.0" level="project" />
-    <orderEntry type="library" name="jung-api-2.0.1-sources" level="project" />
-    <orderEntry type="library" name="jung-api-2.0.1-sources1" level="project" />
-    <orderEntry type="library" name="jung-api-2.0" level="project" />
-    <orderEntry type="library" name="collections-generic-4.01" level="project" />
+    <orderEntry type="library" exported="" name="jung-graph-impl-2.0" level="project" />
+    <orderEntry type="library" exported="" name="jung-algorithms-2.0" level="project" />
+    <orderEntry type="library" exported="" name="jung-api-2.0.1-sources" level="project" />
+    <orderEntry type="library" exported="" name="jung-api-2.0.1-sources1" level="project" />
+    <orderEntry type="library" exported="" name="jung-api-2.0" level="project" />
+    <orderEntry type="library" exported="" name="collections-generic-4.01" level="project" />
   </component>
 </module>
