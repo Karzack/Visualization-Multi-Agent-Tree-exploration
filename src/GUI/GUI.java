@@ -38,7 +38,7 @@ public class GUI extends JPanel {
     public GUI() {
         Graph<Integer, String> g = new DelegateForest<>();
         trad = new Trad();
-        trad.buildTree(8);
+        trad.buildTree(5000);
         AgentNetwork network = new AgentNetwork(trad, 10);
 
         while (trad.getTreeSize() != network.getTreeSize()){
@@ -85,6 +85,12 @@ public class GUI extends JPanel {
                 return Color.RED;
             }
         };
+        Transformer<String,Paint> edgesColor = new Transformer<String, Paint>() {
+            public Paint transform(String i) {
+                if( i == "") return Color.GREEN;
+                return Color.RED;
+            }
+        };
 
         Transformer<Integer,Shape> vertexSize = new Transformer<Integer,Shape>(){
             public Shape transform(Integer i){
@@ -97,19 +103,29 @@ public class GUI extends JPanel {
         vv3.getRenderContext().setVertexShapeTransformer(vertexSize);
         //vv3.getRenderer().getVertexLabelRenderer().setPosition(Renderer.VertexLabel.Position.CNTR);
         vv3.getRenderContext().setVertexFillPaintTransformer(vertexColor);
+        vv3.getRenderContext().setEdgeDrawPaintTransformer(edgesColor);
         maps.add(vv3);
 
         drawBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                mapsPane.setSelectedIndex(0);
                 nodeTxt =nodes.getText();
-                System.out.println(Integer.parseInt(nodeTxt));
+                if( nodeTxt !=null){
+                    System.out.println(Integer.parseInt(nodeTxt));
+
+                }
 
 
             }
         });
 
+        agentsBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                mapsPane.setSelectedIndex(1);
+            }
+        });
     }
 
     public JPanel getPanel(){
