@@ -27,10 +27,6 @@
               <verticalAlignment value="0"/>
             </properties>
           </component>
-          <component id="ad122" class="javax.swing.JTextPane" binding="textPane2" default-binding="true">
-            <constraints/>
-            <properties/>
-          </component>
           <component id="1adfc" class="javax.swing.JTextField" binding="nodes">
             <constraints/>
             <properties>
@@ -41,27 +37,29 @@
             <constraints/>
             <properties>
               <label value="Draw"/>
-              <preferredSize width="100" height="27"/>
+              <opaque value="false"/>
+              <preferredSize width="180" height="27"/>
               <text value="Draw"/>
             </properties>
           </component>
           <component id="b0fc6" class="javax.swing.JLabel">
             <constraints/>
             <properties>
-              <preferredSize width="50" height="16"/>
+              <preferredSize width="60" height="16"/>
               <text value="Agents"/>
             </properties>
           </component>
           <component id="56b30" class="javax.swing.JTextField" binding="agents">
             <constraints/>
             <properties>
-              <preferredSize width="50" height="30"/>
+              <preferredSize width="60" height="30"/>
             </properties>
           </component>
           <component id="4ef84" class="javax.swing.JButton" binding="agentsBtn">
             <constraints/>
             <properties>
               <label value="draw"/>
+              <preferredSize width="180" height="27"/>
               <text value="draw"/>
             </properties>
           </component>
@@ -71,17 +69,35 @@
           </component>
         </children>
       </grid>
-      <grid id="f4be1" binding="maps" layout-manager="BorderLayout" hgap="0" vgap="0">
-        <constraints border-constraint="Center"/>
+      <tabbedpane id="d74fe" binding="mapsPane">
+        <constraints border-constraint="West"/>
         <properties>
-          <opaque value="true"/>
-          <preferredSize width="900" height="0"/>
+          <preferredSize width="1000" height="0"/>
         </properties>
-        <border type="line" title="Map">
-          <color color="-16777216"/>
-        </border>
-        <children/>
-      </grid>
+        <border type="line"/>
+        <children>
+          <grid id="1f75d" binding="maps" layout-manager="BorderLayout" hgap="0" vgap="0">
+            <constraints>
+              <tabbedpane title="Untitled"/>
+            </constraints>
+            <properties>
+              <preferredSize width="900" height="0"/>
+            </properties>
+            <border type="none"/>
+            <children/>
+          </grid>
+          <grid id="52fe9" binding="agentsMap" layout-manager="BorderLayout" hgap="0" vgap="0">
+            <constraints>
+              <tabbedpane title="Untitled"/>
+            </constraints>
+            <properties>
+              <preferredSize width="1000" height="0"/>
+            </properties>
+            <border type="none"/>
+            <children/>
+          </grid>
+        </children>
+      </tabbedpane>
     </children>
   </grid>
 </form>

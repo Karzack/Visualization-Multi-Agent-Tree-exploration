@@ -28,8 +28,9 @@ public class GUI extends JPanel {
     private JTextField agents;
     private JButton agentsBtn;
     private JTextPane textPane1;
+    private JTabbedPane mapsPane;
     private JPanel maps;
-    private JTextPane textPane2;
+    private JPanel agentsMap;
     private Trad trad;
     private String nodeTxt;
 
