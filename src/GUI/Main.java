@@ -6,7 +6,7 @@ import javax.swing.*;
 public class Main {
 
     public static void main(String[] args){
-        JFrame frame = new JFrame("Test");
+        JFrame frame = new JFrame("Multi-agents visualization");
         frame.setContentPane(new GUI().getPanel());
         frame.pack();
         frame.setSize(1200,700);

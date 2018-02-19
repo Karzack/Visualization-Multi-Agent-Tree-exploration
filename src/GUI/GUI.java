@@ -1,6 +1,7 @@
 package GUI;
 
 import AgentNetwork.AgentNetwork;
+import AgentNetwork.Agent;
 import Tree.Edge;
 import Tree.Node;
 import Tree.Trad;
@@ -17,6 +18,8 @@ import org.apache.commons.collections15.Transformer;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.geom.Ellipse2D;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,17 +31,22 @@ public class GUI extends JPanel {
     private JTextField agents;
     private JButton agentsBtn;
     private JButton traverseBtn;
-    private JTextPane textPane1;
     private JTabbedPane mapsPane;
     private JPanel maps;
     private JPanel agentsMap;
+    private JTextField showRouteTxt;
+    private JButton showRouteBtn;
+    private JLabel routeName;
+    private JPanel agentRoutePane;
     private Trad trad;
     private AgentNetwork agentNetwork;
     private String nodeTxt;
-    VisualizationViewer<Integer, String> vv3;
+    private VisualizationViewer<Integer, String> vv3;
+    private Agent agent;
 
 
     public GUI() {
+        agent = new Agent();
         agentsBtn.setEnabled(false);
         // Transformer maps the vertex number to a vertex property
         Transformer<Integer,Paint> vertexColor = new Transformer<Integer,Paint>() {
@@ -243,9 +251,25 @@ public class GUI extends JPanel {
             agentsMap.requestFocus();
             agentsMap.updateUI();
         });
+        showRouteBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                agentNetwork.getAllAgents().forEach(agent -> {
+
+                    Graph<Integer, String> g = new DelegateForest<>();
+
+                            if(Integer.parseInt(showRouteTxt.getText()) == agent.getId()){
+                                routeName.setText(agent.sendLog());
+
+                    }
+                });
+
+            }
+        });
     }
 
     public JPanel getPanel(){
         return mainPanel;
     }
+
 }

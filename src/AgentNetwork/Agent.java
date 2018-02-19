@@ -17,6 +17,9 @@ public class Agent {
         currentNode=root;
         this.network = network;
     }
+    public Agent(){
+
+    }
 
     public int getId() {
         return id;
