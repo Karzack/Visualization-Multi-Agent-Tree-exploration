@@ -67,6 +67,14 @@
             <constraints/>
             <properties/>
           </component>
+          <component id="ce484" class="javax.swing.JButton" binding="traverseBtn">
+            <constraints/>
+            <properties>
+              <label value="Traverse"/>
+              <preferredSize width="180" height="27"/>
+              <text value="Traverse"/>
+            </properties>
+          </component>
         </children>
       </grid>
       <tabbedpane id="d74fe" binding="mapsPane">

@@ -5,10 +5,12 @@ import Tree.Trad;
 
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 public class AgentNetwork {
     private LinkedList<Agent> allAgents = new LinkedList<Agent>();
     private HashMap<Integer, Node> currentTree = new HashMap<Integer, Node>();
+    private LinkedList<Integer> containsAgents = new LinkedList<Integer>();
     private Trad trad;
     private int timestep = 0;
 
@@ -30,6 +32,10 @@ public class AgentNetwork {
         }
     }
 
+    public LinkedList<Integer> getAllAgentLocations(){
+        return containsAgents;
+    }
+
     public LinkedList<Agent> getAllAgents() {
         return allAgents;
     }
@@ -40,6 +46,11 @@ public class AgentNetwork {
             TraverseActionEnum actionEnum = DeterminePath.determinePathCalculation(currentTree,agent);
             agent.traverse(actionEnum);
         });
+        updateAgentLocation();
+    }
+
+    public HashMap<Integer, Node> getCurrentTree() {
+        return currentTree;
     }
 
     public boolean checkExploration(Tree.Edge currentNode){
@@ -67,4 +78,14 @@ public class AgentNetwork {
     public void markExplored(Node currentNode) {
         currentTree.put(currentNode.getId(),currentNode);
     }
+
+    public void updateAgentLocation(){
+        containsAgents.clear();
+        for (Agent agent: allAgents){
+            if(!containsAgents.contains(agent.getCurrentNode().getId())) {
+                containsAgents.add(agent.getCurrentNode().getId());
+            }
+        }
+    }
 }
+
