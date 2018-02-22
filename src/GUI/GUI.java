@@ -9,6 +9,7 @@ import Tree.Trad;
 import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.algorithms.layout.RadialTreeLayout;
 import edu.uci.ics.jung.graph.DelegateForest;
+import edu.uci.ics.jung.graph.DirectedGraph;
 import edu.uci.ics.jung.graph.Forest;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
@@ -38,15 +39,15 @@ public class GUI extends JPanel {
     private JButton showRouteBtn;
     private JLabel routeName;
     private JPanel agentRoutePane;
+    private JCheckBox timedTraversalCheckBox;
     private Trad trad;
     private AgentNetwork agentNetwork;
     private String nodeTxt;
     private VisualizationViewer<Integer, String> vv3;
-    private Agent agent;
 
 
     public GUI() {
-        agent = new Agent();
+
         agentsBtn.setEnabled(false);
         // Transformer maps the vertex number to a vertex property
         Transformer<Integer,Paint> vertexColor = new Transformer<Integer,Paint>() {
@@ -73,19 +74,9 @@ public class GUI extends JPanel {
             mapsPane.setSelectedIndex(0);
             nodeTxt =nodes.getText();
             if( nodeTxt !=null){
-                Graph<Integer, String> g = new DelegateForest<>();
+                DirectedGraph<Integer, String> g = new DelegateForest<>();
                 trad = new Trad();
                 trad.buildTree(Integer.parseInt(nodeTxt));
-                /*AgentNetwork network = new AgentNetwork(trad, 10);
-
-                while (trad.getTreeSize() != network.getTreeSize()){
-                    network.traverseExecute();
-
-                }
-                System.out.println("Tree with " + trad.getTreeSize() + " nodes explored in " + network.getTimestep() + " steps");
-                network.getAllAgents().forEach(agent -> {
-                    System.out.println("Agent " + agent.getId() + " route: " + agent.sendLog());
-                });*/
 
                 for (Map.Entry<Integer, Node> nodes: trad.getAllNodes().entrySet())
                 {
@@ -97,7 +88,7 @@ public class GUI extends JPanel {
                 {
                     g.addEdge(edges.getKey(),edges.getValue().getParent().getId(),edges.getValue().getChild().getId());
                 }
-
+                //g.addEdge("1-0",1,0);
 
 
                 Layout<Integer, String> layout3 = new RadialTreeLayout<>((Forest<Integer, String>) g);
@@ -119,7 +110,7 @@ public class GUI extends JPanel {
                 };
 
                 Transformer<Integer,Shape> vertexSize1 = i -> {
-                    Ellipse2D circle = new Ellipse2D.Double(0, 0, 8, 8);
+                    Ellipse2D circle = new Ellipse2D.Double(-4, -4, 8, 8);
                     return circle;
                 };
 
@@ -178,7 +169,7 @@ public class GUI extends JPanel {
                 };
 
                 Transformer<Integer,Shape> vertexSize1 = i -> {
-                    Ellipse2D circle = new Ellipse2D.Double(0, 0, 8, 8);
+                    Ellipse2D circle = new Ellipse2D.Double(-4, -4, 8, 8);
                     return circle;
                 };
 
@@ -196,80 +187,142 @@ public class GUI extends JPanel {
         });
 
         traverseBtn.addActionListener(e -> {
-            HashMap<Integer, Node> tempTree = (HashMap<Integer, Node>) agentNetwork.getCurrentTree().clone();
-            agentNetwork.traverseExecute();
-            Graph<Integer, String> g = new DelegateForest<>();
-            mapsPane.setSelectedIndex(1);
+            if(!timedTraversalCheckBox.isSelected()){
+                HashMap<Integer, Node> tempTree = (HashMap<Integer, Node>) agentNetwork.getCurrentTree().clone();
+                agentNetwork.traverseExecute();
+                Graph<Integer, String> g = new DelegateForest<>();
+                mapsPane.setSelectedIndex(1);
 
-            for (Map.Entry<Integer, Node> nodes: agentNetwork.getCurrentTree().entrySet())
-            {
+                for (Map.Entry<Integer, Node> nodes : agentNetwork.getCurrentTree().entrySet()) {
 
-                g.addVertex(nodes.getValue().getId());
+                    g.addVertex(nodes.getValue().getId());
 
-            }
-
-            for (Map.Entry<String, Edge> edges: trad.getAllEdges().entrySet())
-            {
-                if(agentNetwork.getCurrentTree().containsValue(edges.getValue().getChild())) {
-                    g.addEdge(edges.getKey(), edges.getValue().getParent().getId(), edges.getValue().getChild().getId());
                 }
-            }
 
-            Layout<Integer, String> layout3 = new RadialTreeLayout<>((Forest<Integer, String>) g);
-            vv3 = new VisualizationViewer<>(layout3);
+                for (Map.Entry<String, Edge> edges : trad.getAllEdges().entrySet()) {
+                    if (agentNetwork.getCurrentTree().containsValue(edges.getValue().getChild())) {
+                        g.addEdge(edges.getKey(), edges.getValue().getParent().getId(), edges.getValue().getChild().getId());
+                    }
+                }
 
-            final DefaultModalGraphMouse<String, Number> graphMouse3 = new DefaultModalGraphMouse<>();
-            vv3.setGraphMouse(graphMouse3);
-            graphMouse3.setMode(ModalGraphMouse.Mode.PICKING);
+                Layout<Integer, String> layout3 = new RadialTreeLayout<>((Forest<Integer, String>) g);
+                vv3 = new VisualizationViewer<>(layout3);
 
-            Transformer<Integer, String> transformer = integer -> String.valueOf(integer);
-            // Transformer maps the vertex number to a vertex property
-            Transformer<Integer,Paint> vertexColorNodes = i -> {
-                if(i == 0) return Color.GREEN;
-                else if(!tempTree.containsValue(agentNetwork.getCurrentTree().get(i))) return Color.YELLOW;
-                else if(agentNetwork.getAllAgentLocations().contains(i))return Color.CYAN;
-                return Color.RED;
-            };
+                final DefaultModalGraphMouse<String, Number> graphMouse3 = new DefaultModalGraphMouse<>();
+                vv3.setGraphMouse(graphMouse3);
+                graphMouse3.setMode(ModalGraphMouse.Mode.PICKING);
 
-            Transformer<String,Paint> edgesColorEdges = i -> {
-                if( i == "") return Color.YELLOW;
-                return Color.RED;
-            };
+                Transformer<Integer, String> transformer = integer -> String.valueOf(integer);
+                // Transformer maps the vertex number to a vertex property
+                Transformer<Integer, Paint> vertexColorNodes = i -> {
+                    if (i == 0) return Color.GREEN;
+                    else if (!tempTree.containsValue(agentNetwork.getCurrentTree().get(i))) return Color.YELLOW;
+                    else if (agentNetwork.getAllAgentLocations().contains(i)) return Color.CYAN;
+                    return Color.RED;
+                };
 
-            Transformer<Integer,Shape> vertexSize1 = i -> {
-                Ellipse2D circle = new Ellipse2D.Double(0, 0, 8, 8);
-                return circle;
-            };
+                Transformer<String, Paint> edgesColorEdges = i -> {
+                    if (i == "") return Color.YELLOW;
+                    return Color.RED;
+                };
 
-            vv3.getRenderContext().setVertexLabelTransformer(transformer);
-            vv3.getRenderContext().setVertexShapeTransformer(vertexSize1);
-            //vv3.getRenderer().getVertexLabelRenderer().setPosition(Renderer.VertexLabel.Position.CNTR);
-            vv3.getRenderContext().setVertexFillPaintTransformer(vertexColorNodes);
-            vv3.getRenderContext().setEdgeDrawPaintTransformer(edgesColorEdges);
-            agentsMap.removeAll();
-            agentsMap.add(vv3);
-            agentsMap.requestFocus();
-            agentsMap.updateUI();
-        });
-        showRouteBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                agentNetwork.getAllAgents().forEach(agent -> {
+                Transformer<Integer, Shape> vertexSize1 = i -> {
+                    Ellipse2D circle = new Ellipse2D.Double(-4, -4, 8, 8);
+                    return circle;
+                };
 
-                    Graph<Integer, String> g = new DelegateForest<>();
+                vv3.getRenderContext().setVertexLabelTransformer(transformer);
+                vv3.getRenderContext().setVertexShapeTransformer(vertexSize1);
+                //vv3.getRenderer().getVertexLabelRenderer().setPosition(Renderer.VertexLabel.Position.CNTR);
+                vv3.getRenderContext().setVertexFillPaintTransformer(vertexColorNodes);
+                vv3.getRenderContext().setEdgeDrawPaintTransformer(edgesColorEdges);
+                agentsMap.removeAll();
+                agentsMap.add(vv3);
+                agentsMap.requestFocus();
+                agentsMap.updateUI();
+        }
+        else {
+            new TimedTraversal(trad,agentNetwork,mapsPane,agentsMap).start();
+            }});
 
-                            if(Integer.parseInt(showRouteTxt.getText()) == agent.getId()){
-                                routeName.setText(agent.sendLog());
+
+        showRouteBtn.addActionListener(e -> {
+            agentRoutePane.removeAll();
+            mapsPane.setSelectedIndex(2);
+            nodeTxt =nodes.getText();
+            Agent agent = agentNetwork.getAllAgents().get(Integer.valueOf(showRouteTxt.getText()));
+            String[] log = agent.sendLog().split(",");
+            Graph<Integer, String> g = new DelegateForest<>();
+            if(agent != null){
+                mapsPane.setSelectedIndex(2);
+                routeName.setText(agent.sendLog());
+                Integer lastChar = Integer.valueOf(log[0]);
+                g.addVertex(lastChar);
+                for (int i = 1; i < log.length; i++) {
+                    Integer logged = Integer.valueOf(log[i]);
+                    if(lastChar != logged){
+                        if (!g.containsVertex(logged)) {
+                            g.addVertex(logged);
+
+                        }
 
                     }
-                });
+                    lastChar = logged;
+                }
+                for(int i = 1;i<log.length;i++){
+                    if(Integer.valueOf(log[i-1]) < Integer.valueOf(log[i]))
+                        g.addEdge(log[i-1] + "-" + log[i], Integer.valueOf(log[i-1]), Integer.valueOf(log[i]));
+                }
+
+
+
+                Layout<Integer, String> layout3 = new RadialTreeLayout<>((Forest<Integer, String>) g);
+                vv3 = new VisualizationViewer<>(layout3);
+
+                final DefaultModalGraphMouse<String, Number> graphMouse3 = new DefaultModalGraphMouse<>();
+                vv3.setGraphMouse(graphMouse3);
+                graphMouse3.setMode(ModalGraphMouse.Mode.PICKING);
+
+                Transformer<Integer, String> transformer = integer -> String.valueOf(integer);
+                // Transformer maps the vertex number to a vertex property
+                Transformer<Integer,Paint> vertexColor1 = i -> {
+                    if(i == 0) return Color.GREEN;
+                    return Color.RED;
+                };
+                Transformer<String,Paint> edgesColor1 = i -> {
+                    if( i == "") return Color.GREEN;
+                    return Color.RED;
+                };
+
+                Transformer<Integer,Shape> vertexSize1 = i -> {
+                    Ellipse2D circle = new Ellipse2D.Double(-4, -4, 8, 8);
+                    return circle;
+                };
+
+                vv3.getRenderContext().setVertexLabelTransformer(transformer);
+                vv3.getRenderContext().setVertexShapeTransformer(vertexSize1);
+                //vv3.getRenderer().getVertexLabelRenderer().setPosition(Renderer.VertexLabel.Position.CNTR);
+                vv3.getRenderContext().setVertexFillPaintTransformer(vertexColor1);
+                vv3.getRenderContext().setEdgeDrawPaintTransformer(edgesColor1);
+
+                agentRoutePane.add(vv3);
+                agentRoutePane.requestFocus();
+                agentRoutePane.updateUI();
 
             }
+
         });
+
     }
+
+
 
     public JPanel getPanel(){
         return mainPanel;
     }
 
+
+
 }
+
+

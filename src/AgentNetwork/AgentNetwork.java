@@ -87,5 +87,12 @@ public class AgentNetwork {
             }
         }
     }
+
+    public boolean checkIfAllAgentsInRoot() {
+        if(containsAgents.size()==1 && containsAgents.getFirst()==0){
+            return true;
+        }
+        return false;
+    }
 }
 
