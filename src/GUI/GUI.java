@@ -18,10 +18,12 @@ import edu.uci.ics.jung.visualization.control.ModalGraphMouse;
 import org.apache.commons.collections15.Transformer;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.Ellipse2D;
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,31 +42,34 @@ public class GUI extends JPanel {
     private JLabel routeName;
     private JPanel agentRoutePane;
     private JCheckBox timedTraversalCheckBox;
+    private JButton resetBtn;
+    private JButton fileReaderBtn;
     private Trad trad;
     private AgentNetwork agentNetwork;
     private String nodeTxt;
     private VisualizationViewer<Integer, String> vv3;
+    private JFileChooser fc = new JFileChooser();
 
 
     public GUI() {
 
         agentsBtn.setEnabled(false);
         // Transformer maps the vertex number to a vertex property
-        Transformer<Integer,Paint> vertexColor = new Transformer<Integer,Paint>() {
+        Transformer<Integer, Paint> vertexColor = new Transformer<Integer, Paint>() {
             public Paint transform(Integer i) {
-                if(i == 0) return Color.GREEN;
+                if (i == 0) return Color.GREEN;
                 return Color.RED;
             }
         };
-        Transformer<String,Paint> edgesColor = new Transformer<String, Paint>() {
+        Transformer<String, Paint> edgesColor = new Transformer<String, Paint>() {
             public Paint transform(String i) {
-                if( i == "") return Color.GREEN;
+                if (i == "") return Color.GREEN;
                 return Color.RED;
             }
         };
 
-        Transformer<Integer,Shape> vertexSize = new Transformer<Integer,Shape>(){
-            public Shape transform(Integer i){
+        Transformer<Integer, Shape> vertexSize = new Transformer<Integer, Shape>() {
+            public Shape transform(Integer i) {
                 Ellipse2D circle = new Ellipse2D.Double(0, 0, 8, 8);
                 return circle;
             }
@@ -72,21 +77,19 @@ public class GUI extends JPanel {
 
         drawBtn.addActionListener(e -> {
             mapsPane.setSelectedIndex(0);
-            nodeTxt =nodes.getText();
-            if( nodeTxt !=null){
+            nodeTxt = nodes.getText();
+            if (nodeTxt != null) {
                 DirectedGraph<Integer, String> g = new DelegateForest<>();
                 trad = new Trad();
                 trad.buildTree(Integer.parseInt(nodeTxt));
 
-                for (Map.Entry<Integer, Node> nodes: trad.getAllNodes().entrySet())
-                {
+                for (Map.Entry<Integer, Node> nodes : trad.getAllNodes().entrySet()) {
 
                     g.addVertex(nodes.getValue().getId());
 
                 }
-                for (Map.Entry<String, Edge> edges: trad.getAllEdges().entrySet())
-                {
-                    g.addEdge(edges.getKey(),edges.getValue().getParent().getId(),edges.getValue().getChild().getId());
+                for (Map.Entry<String, Edge> edges : trad.getAllEdges().entrySet()) {
+                    g.addEdge(edges.getKey(), edges.getValue().getParent().getId(), edges.getValue().getChild().getId());
                 }
                 //g.addEdge("1-0",1,0);
 
@@ -100,16 +103,16 @@ public class GUI extends JPanel {
 
                 Transformer<Integer, String> transformer = integer -> String.valueOf(integer);
                 // Transformer maps the vertex number to a vertex property
-                Transformer<Integer,Paint> vertexColor1 = i -> {
-                    if(i == 0) return Color.GREEN;
+                Transformer<Integer, Paint> vertexColor1 = i -> {
+                    if (i == 0) return Color.GREEN;
                     return Color.RED;
                 };
-                Transformer<String,Paint> edgesColor1 = i -> {
-                    if( i == "") return Color.GREEN;
+                Transformer<String, Paint> edgesColor1 = i -> {
+                    if (i == "") return Color.GREEN;
                     return Color.RED;
                 };
 
-                Transformer<Integer,Shape> vertexSize1 = i -> {
+                Transformer<Integer, Shape> vertexSize1 = i -> {
                     Ellipse2D circle = new Ellipse2D.Double(-4, -4, 8, 8);
                     return circle;
                 };
@@ -131,21 +134,19 @@ public class GUI extends JPanel {
         });
 
         agentsBtn.addActionListener(e -> {
-            if(trad!=null){
+            if (trad != null) {
                 Graph<Integer, String> g = new DelegateForest<>();
                 mapsPane.setSelectedIndex(1);
-                agentNetwork = new AgentNetwork(trad,Integer.parseInt(agents.getText()));
+                agentNetwork = new AgentNetwork(trad, Integer.parseInt(agents.getText()));
 
-                for (Map.Entry<Integer, Node> nodes: agentNetwork.getCurrentTree().entrySet())
-                {
+                for (Map.Entry<Integer, Node> nodes : agentNetwork.getCurrentTree().entrySet()) {
 
                     g.addVertex(nodes.getValue().getId());
 
                 }
 
-                for (Map.Entry<String, Edge> edges: trad.getAllEdges().entrySet())
-                {
-                    if(agentNetwork.getCurrentTree().containsValue(edges.getValue().getChild())) {
+                for (Map.Entry<String, Edge> edges : trad.getAllEdges().entrySet()) {
+                    if (agentNetwork.getCurrentTree().containsValue(edges.getValue().getChild())) {
                         g.addEdge(edges.getKey(), edges.getValue().getParent().getId(), edges.getValue().getChild().getId());
                     }
                 }
@@ -159,16 +160,16 @@ public class GUI extends JPanel {
 
                 Transformer<Integer, String> transformer = integer -> String.valueOf(integer);
                 // Transformer maps the vertex number to a vertex property
-                Transformer<Integer,Paint> vertexColor1 = i -> {
-                    if(i == 0) return Color.GREEN;
+                Transformer<Integer, Paint> vertexColor1 = i -> {
+                    if (i == 0) return Color.GREEN;
                     return Color.RED;
                 };
-                Transformer<String,Paint> edgesColor1 = i -> {
-                    if( i == "") return Color.GREEN;
+                Transformer<String, Paint> edgesColor1 = i -> {
+                    if (i == "") return Color.GREEN;
                     return Color.RED;
                 };
 
-                Transformer<Integer,Shape> vertexSize1 = i -> {
+                Transformer<Integer, Shape> vertexSize1 = i -> {
                     Ellipse2D circle = new Ellipse2D.Double(-4, -4, 8, 8);
                     return circle;
                 };
@@ -187,7 +188,7 @@ public class GUI extends JPanel {
         });
 
         traverseBtn.addActionListener(e -> {
-            if(!timedTraversalCheckBox.isSelected()){
+            if (!timedTraversalCheckBox.isSelected()) {
                 HashMap<Integer, Node> tempTree = (HashMap<Integer, Node>) agentNetwork.getCurrentTree().clone();
                 agentNetwork.traverseExecute();
                 Graph<Integer, String> g = new DelegateForest<>();
@@ -240,27 +241,27 @@ public class GUI extends JPanel {
                 agentsMap.add(vv3);
                 agentsMap.requestFocus();
                 agentsMap.updateUI();
-        }
-        else {
-            new TimedTraversal(trad,agentNetwork,mapsPane,agentsMap).start();
-            }});
+            } else {
+                new TimedTraversal(trad, agentNetwork, mapsPane, agentsMap).start();
+            }
+        });
 
 
         showRouteBtn.addActionListener(e -> {
             agentRoutePane.removeAll();
             mapsPane.setSelectedIndex(2);
-            nodeTxt =nodes.getText();
+            nodeTxt = nodes.getText();
             Agent agent = agentNetwork.getAllAgents().get(Integer.valueOf(showRouteTxt.getText()));
             String[] log = agent.sendLog().split(",");
             Graph<Integer, String> g = new DelegateForest<>();
-            if(agent != null){
+            if (agent != null) {
                 mapsPane.setSelectedIndex(2);
                 routeName.setText(agent.sendLog());
                 Integer lastChar = Integer.valueOf(log[0]);
                 g.addVertex(lastChar);
                 for (int i = 1; i < log.length; i++) {
                     Integer logged = Integer.valueOf(log[i]);
-                    if(lastChar != logged){
+                    if (lastChar != logged) {
                         if (!g.containsVertex(logged)) {
                             g.addVertex(logged);
 
@@ -269,11 +270,10 @@ public class GUI extends JPanel {
                     }
                     lastChar = logged;
                 }
-                for(int i = 1;i<log.length;i++){
-                    if(Integer.valueOf(log[i-1]) < Integer.valueOf(log[i]))
-                        g.addEdge(log[i-1] + "-" + log[i], Integer.valueOf(log[i-1]), Integer.valueOf(log[i]));
+                for (int i = 1; i < log.length; i++) {
+                    if (Integer.valueOf(log[i - 1]) < Integer.valueOf(log[i]))
+                        g.addEdge(log[i - 1] + "-" + log[i], Integer.valueOf(log[i - 1]), Integer.valueOf(log[i]));
                 }
-
 
 
                 Layout<Integer, String> layout3 = new RadialTreeLayout<>((Forest<Integer, String>) g);
@@ -285,16 +285,16 @@ public class GUI extends JPanel {
 
                 Transformer<Integer, String> transformer = integer -> String.valueOf(integer);
                 // Transformer maps the vertex number to a vertex property
-                Transformer<Integer,Paint> vertexColor1 = i -> {
-                    if(i == 0) return Color.GREEN;
+                Transformer<Integer, Paint> vertexColor1 = i -> {
+                    if (i == 0) return Color.GREEN;
                     return Color.RED;
                 };
-                Transformer<String,Paint> edgesColor1 = i -> {
-                    if( i == "") return Color.GREEN;
+                Transformer<String, Paint> edgesColor1 = i -> {
+                    if (i == "") return Color.GREEN;
                     return Color.RED;
                 };
 
-                Transformer<Integer,Shape> vertexSize1 = i -> {
+                Transformer<Integer, Shape> vertexSize1 = i -> {
                     Ellipse2D circle = new Ellipse2D.Double(-4, -4, 8, 8);
                     return circle;
                 };
@@ -313,9 +313,49 @@ public class GUI extends JPanel {
 
         });
 
+        resetBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                maps.removeAll();
+                agentsMap.removeAll();
+                agentRoutePane.removeAll();
+                mapsPane.updateUI();
+                drawBtn.setEnabled(true);
+            }
+        });
+        fileReaderBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                File file = null;
+                int returnVal = fc.showOpenDialog(GUI.this);
+                if (returnVal == JFileChooser.APPROVE_OPTION) {
+                    try {
+                        file = fc.getSelectedFile();
+                    } catch (Exception e1) {
+
+                    }
+
+                    try {
+                        FileReader fr = new FileReader(file);
+                        BufferedReader br = new BufferedReader(fr);
+
+                        String str;
+                        while ((str = br.readLine()) != null) {
+                            System.out.println(str);
+                            JOptionPane.showMessageDialog(null, str);
+
+                        }
+                        br.close();
+                    } catch (FileNotFoundException e1) {
+                        JOptionPane.showMessageDialog(null, "File not found");
+                    } catch (IOException e1) {
+                        JOptionPane.showMessageDialog(null, "IO exception");
+                    }
+                }
+            }
+        });
     }
-
-
+    
 
     public JPanel getPanel(){
         return mainPanel;
