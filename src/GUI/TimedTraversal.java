@@ -6,6 +6,7 @@ import Tree.Node;
 import Tree.Trad;
 import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.algorithms.layout.RadialTreeLayout;
+import edu.uci.ics.jung.algorithms.layout.TreeLayout;
 import edu.uci.ics.jung.graph.DelegateForest;
 import edu.uci.ics.jung.graph.Forest;
 import edu.uci.ics.jung.graph.Graph;
@@ -26,13 +27,15 @@ public class TimedTraversal extends Thread {
     private Trad trad;
     private JTabbedPane mapsPane;
     private JPanel agentsMap;
+    private int time;
 
-    public TimedTraversal(Trad trad, AgentNetwork agentNetwork, JTabbedPane mapsPane, JPanel agentsMap) {
+    public TimedTraversal(Trad trad, AgentNetwork agentNetwork, JTabbedPane mapsPane, JPanel agentsMap, int time) {
         this.trad = trad;
         this.agentNetwork = agentNetwork;
         this.mapsPane = mapsPane;
         this.agentsMap = agentsMap;
 
+        this.time = time;
     }
 
     @Override
@@ -91,10 +94,10 @@ public class TimedTraversal extends Thread {
             agentsMap.requestFocus();
             agentsMap.updateUI();
             try {
-                sleep(50);
+                sleep(time);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-        }while (!agentNetwork.checkIfAllAgentsInRoot());
+        }while (!agentNetwork.checkIfComplete());
     }
 }

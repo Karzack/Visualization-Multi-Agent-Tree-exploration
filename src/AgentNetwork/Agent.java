@@ -3,6 +3,8 @@ package AgentNetwork;
 import Tree.Edge;
 import Tree.Node;
 
+import java.util.Random;
+
 
 public class Agent {
     private int id;
@@ -40,10 +42,21 @@ public class Agent {
     public void traverse(TraverseActionEnum action) {
         switch (action) {
             case UP:
+                if(currentNode.getToParent() != null)
+            {
                 currentNode = currentNode.getToParent().getParent();
-                registerLog(currentNode);
-                break;
+            }
+            registerLog(currentNode);
+            break;
             case DOWN:
+                if(currentNode.getChildren().size()>0) {
+                    int route = new Random().nextInt(currentNode.getChildren().size());
+                    currentNode = currentNode.getChildren().get(route).getChild();
+                    if(!network.checkExploration(currentNode.getToParent())){
+                        network.markExplored(currentNode);
+                    }
+                    registerLog(currentNode);
+                }
                 break;
             case EXPLORED:
                 break;

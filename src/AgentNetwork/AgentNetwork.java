@@ -44,6 +44,7 @@ public class AgentNetwork {
         timestep++;
         allAgents.forEach(agent -> {
             TraverseActionEnum actionEnum = DeterminePath.determinePathCalculation(currentTree,agent);
+            //TraverseActionEnum actionEnum = DeterminePath.determineByRandom();
             agent.traverse(actionEnum);
         });
         updateAgentLocation();
@@ -85,6 +86,15 @@ public class AgentNetwork {
             if(!containsAgents.contains(agent.getCurrentNode().getId())) {
                 containsAgents.add(agent.getCurrentNode().getId());
             }
+        }
+    }
+
+    public boolean checkIfComplete(){
+        if(currentTree.size()==trad.getTreeSize()){
+            return true;
+        }
+        else{
+            return false;
         }
     }
 

@@ -4,6 +4,11 @@ import Tree.Edge;
 import Tree.Node;
 
 import java.util.HashMap;
+import java.util.Random;
+
+import static AgentNetwork.TraverseActionEnum.DOWN;
+import static AgentNetwork.TraverseActionEnum.STAY;
+import static AgentNetwork.TraverseActionEnum.UP;
 
 public final class DeterminePath {
 
@@ -22,11 +27,22 @@ public final class DeterminePath {
         }
         else{
             if(agent.getCurrentNode().getToParent()!=null) {
-                return TraverseActionEnum.UP;
+                return UP;
             }
             else{
                 return TraverseActionEnum.STAY;
             }
         }
+    }
+    public static TraverseActionEnum determineByRandom(){
+        switch(new Random().nextInt(3)){
+            case 0:
+                return UP;
+            case 1:
+                return DOWN;
+            case 2:
+                return STAY;
+        }
+        return STAY;
     }
 }

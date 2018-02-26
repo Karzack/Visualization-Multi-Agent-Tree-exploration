@@ -43,6 +43,7 @@ public class GUI extends JPanel {
     private JPanel agentRoutePane;
     private JCheckBox timedTraversalCheckBox;
     private JButton resetBtn;
+    private JTextField txtTImeInterval;
     private JButton fileReaderBtn;
     private Trad trad;
     private AgentNetwork agentNetwork;
@@ -242,7 +243,8 @@ public class GUI extends JPanel {
                 agentsMap.requestFocus();
                 agentsMap.updateUI();
             } else {
-                new TimedTraversal(trad, agentNetwork, mapsPane, agentsMap).start();
+                int time = Integer.parseInt(txtTImeInterval.getText());
+                new TimedTraversal(trad, agentNetwork, mapsPane, agentsMap,time).start();
             }
         });
 
@@ -255,75 +257,78 @@ public class GUI extends JPanel {
             String[] log = agent.sendLog().split(",");
             Graph<Integer, String> g = new DelegateForest<>();
             if (agent != null) {
-                mapsPane.setSelectedIndex(2);
-                routeName.setText(agent.sendLog());
-                Integer lastChar = Integer.valueOf(log[0]);
-                g.addVertex(lastChar);
-                for (int i = 1; i < log.length; i++) {
-                    Integer logged = Integer.valueOf(log[i]);
-                    if (lastChar != logged) {
-                        if (!g.containsVertex(logged)) {
-                            g.addVertex(logged);
+                if(!timedTraversalCheckBox.isSelected()) {
+                    mapsPane.setSelectedIndex(2);
+                    routeName.setText(agent.sendLog());
+                    Integer lastChar = Integer.valueOf(log[0]);
+                    g.addVertex(lastChar);
+                    for (int i = 1; i < log.length; i++) {
+                        Integer logged = Integer.valueOf(log[i]);
+                        if (lastChar != logged) {
+                            if (!g.containsVertex(logged)) {
+                                g.addVertex(logged);
+
+                            }
 
                         }
-
+                        lastChar = logged;
                     }
-                    lastChar = logged;
+                    for (int i = 1; i < log.length; i++) {
+                        if (Integer.valueOf(log[i - 1]) < Integer.valueOf(log[i]))
+                            g.addEdge(log[i - 1] + "-" + log[i], Integer.valueOf(log[i - 1]), Integer.valueOf(log[i]));
+                    }
+
+
+                    Layout<Integer, String> layout3 = new RadialTreeLayout<>((Forest<Integer, String>) g);
+                    vv3 = new VisualizationViewer<>(layout3);
+
+                    final DefaultModalGraphMouse<String, Number> graphMouse3 = new DefaultModalGraphMouse<>();
+                    vv3.setGraphMouse(graphMouse3);
+                    graphMouse3.setMode(ModalGraphMouse.Mode.PICKING);
+
+                    Transformer<Integer, String> transformer = integer -> String.valueOf(integer);
+                    // Transformer maps the vertex number to a vertex property
+                    Transformer<Integer, Paint> vertexColor1 = i -> {
+                        if (i == 0) return Color.GREEN;
+                        return Color.RED;
+                    };
+                    Transformer<String, Paint> edgesColor1 = i -> {
+                        if (i == "") return Color.GREEN;
+                        return Color.RED;
+                    };
+
+                    Transformer<Integer, Shape> vertexSize1 = i -> {
+                        Ellipse2D circle = new Ellipse2D.Double(-4, -4, 8, 8);
+                        return circle;
+                    };
+
+                    vv3.getRenderContext().setVertexLabelTransformer(transformer);
+                    vv3.getRenderContext().setVertexShapeTransformer(vertexSize1);
+                    //vv3.getRenderer().getVertexLabelRenderer().setPosition(Renderer.VertexLabel.Position.CNTR);
+                    vv3.getRenderContext().setVertexFillPaintTransformer(vertexColor1);
+                    vv3.getRenderContext().setEdgeDrawPaintTransformer(edgesColor1);
+
+                    agentRoutePane.add(vv3);
+                    agentRoutePane.requestFocus();
+                    agentRoutePane.updateUI();
                 }
-                for (int i = 1; i < log.length; i++) {
-                    if (Integer.valueOf(log[i - 1]) < Integer.valueOf(log[i]))
-                        g.addEdge(log[i - 1] + "-" + log[i], Integer.valueOf(log[i - 1]), Integer.valueOf(log[i]));
+                else{
+                    int time = Integer.parseInt(txtTImeInterval.getText());
+                    new TimedTraversalSingle(agent,agentRoutePane,mapsPane,time).start();
                 }
-
-
-                Layout<Integer, String> layout3 = new RadialTreeLayout<>((Forest<Integer, String>) g);
-                vv3 = new VisualizationViewer<>(layout3);
-
-                final DefaultModalGraphMouse<String, Number> graphMouse3 = new DefaultModalGraphMouse<>();
-                vv3.setGraphMouse(graphMouse3);
-                graphMouse3.setMode(ModalGraphMouse.Mode.PICKING);
-
-                Transformer<Integer, String> transformer = integer -> String.valueOf(integer);
-                // Transformer maps the vertex number to a vertex property
-                Transformer<Integer, Paint> vertexColor1 = i -> {
-                    if (i == 0) return Color.GREEN;
-                    return Color.RED;
-                };
-                Transformer<String, Paint> edgesColor1 = i -> {
-                    if (i == "") return Color.GREEN;
-                    return Color.RED;
-                };
-
-                Transformer<Integer, Shape> vertexSize1 = i -> {
-                    Ellipse2D circle = new Ellipse2D.Double(-4, -4, 8, 8);
-                    return circle;
-                };
-
-                vv3.getRenderContext().setVertexLabelTransformer(transformer);
-                vv3.getRenderContext().setVertexShapeTransformer(vertexSize1);
-                //vv3.getRenderer().getVertexLabelRenderer().setPosition(Renderer.VertexLabel.Position.CNTR);
-                vv3.getRenderContext().setVertexFillPaintTransformer(vertexColor1);
-                vv3.getRenderContext().setEdgeDrawPaintTransformer(edgesColor1);
-
-                agentRoutePane.add(vv3);
-                agentRoutePane.requestFocus();
-                agentRoutePane.updateUI();
 
             }
 
         });
 
-        resetBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                maps.removeAll();
-                agentsMap.removeAll();
-                agentRoutePane.removeAll();
-                mapsPane.updateUI();
-                drawBtn.setEnabled(true);
-            }
+        resetBtn.addActionListener(e -> {
+            maps.removeAll();
+            agentsMap.removeAll();
+            agentRoutePane.removeAll();
+            mapsPane.updateUI();
+            drawBtn.setEnabled(true);
         });
-        fileReaderBtn.addActionListener(new ActionListener() {
+       /*fileReaderBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 File file = null;
@@ -353,7 +358,8 @@ public class GUI extends JPanel {
                     }
                 }
             }
-        });
+        });*/
+
     }
     
 

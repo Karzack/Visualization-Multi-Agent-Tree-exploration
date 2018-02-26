@@ -2,7 +2,7 @@
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="GUI.GUI">
   <grid id="27dc6" binding="mainPanel" layout-manager="BorderLayout" hgap="0" vgap="0">
     <constraints>
-      <xy x="20" y="20" width="724" height="1028"/>
+      <xy x="20" y="20" width="797" height="1028"/>
     </constraints>
     <properties>
       <opaque value="true"/>
@@ -63,12 +63,6 @@
               <text value="draw"/>
             </properties>
           </component>
-          <component id="67f0" class="javax.swing.JCheckBox" binding="timedTraversalCheckBox" default-binding="true">
-            <constraints/>
-            <properties>
-              <text value="Timed traversal"/>
-            </properties>
-          </component>
           <component id="ce484" class="javax.swing.JButton" binding="traverseBtn">
             <constraints/>
             <properties>
@@ -91,6 +85,25 @@
               <preferredSize width="60" height="30"/>
             </properties>
           </component>
+          <component id="77bfb" class="javax.swing.JLabel">
+            <constraints/>
+            <properties>
+              <preferredSize width="80" height="16"/>
+              <text value="Tidsintervall"/>
+            </properties>
+          </component>
+          <component id="417ca" class="javax.swing.JTextField" binding="txtTImeInterval">
+            <constraints/>
+            <properties>
+              <preferredSize width="60" height="30"/>
+            </properties>
+          </component>
+          <component id="67f0" class="javax.swing.JCheckBox" binding="timedTraversalCheckBox" default-binding="true">
+            <constraints/>
+            <properties>
+              <text value="Timed traversal"/>
+            </properties>
+          </component>
           <component id="2a269" class="javax.swing.JLabel" binding="routeName">
             <constraints/>
             <properties>
@@ -99,21 +112,28 @@
               <text value=""/>
             </properties>
           </component>
+          <component id="7aa13" class="javax.swing.JButton" binding="resetBtn">
+            <constraints/>
+            <properties>
+              <text value="Reset"/>
+            </properties>
+          </component>
         </children>
       </grid>
       <tabbedpane id="d74fe" binding="mapsPane">
         <constraints border-constraint="West"/>
         <properties>
-          <preferredSize width="1000" height="0"/>
+          <opaque value="false"/>
+          <preferredSize width="950" height="0"/>
         </properties>
-        <border type="line"/>
+        <border type="none"/>
         <children>
           <grid id="1f75d" binding="maps" layout-manager="BorderLayout" hgap="0" vgap="0">
             <constraints>
               <tabbedpane title="Nodes map"/>
             </constraints>
             <properties>
-              <preferredSize width="900" height="0"/>
+              <preferredSize width="600" height="0"/>
             </properties>
             <border type="line">
               <color color="-16777216"/>
