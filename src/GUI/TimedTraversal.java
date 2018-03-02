@@ -28,14 +28,23 @@ public class TimedTraversal extends Thread {
     private JTabbedPane mapsPane;
     private JPanel agentsMap;
     private int time;
+    private JLabel fastestAgent;
+    private JLabel slowestAgent;
+    private JLabel agentTimeStepCounter;
+    private int agentTimeStepCounterNumber;
 
-    public TimedTraversal(Trad trad, AgentNetwork agentNetwork, JTabbedPane mapsPane, JPanel agentsMap, int time) {
+
+    public TimedTraversal(Trad trad, AgentNetwork agentNetwork, JTabbedPane mapsPane, JPanel agentsMap, int time, JLabel fastestAgent, JLabel slowestAgent, JLabel agentTimeStepCounter, int agentTimeStepCounterNumber) {
         this.trad = trad;
         this.agentNetwork = agentNetwork;
         this.mapsPane = mapsPane;
         this.agentsMap = agentsMap;
 
         this.time = time;
+        this.fastestAgent = fastestAgent;
+        this.slowestAgent = slowestAgent;
+        this.agentTimeStepCounter = agentTimeStepCounter;
+        this.agentTimeStepCounterNumber = agentTimeStepCounterNumber;
     }
 
     @Override
@@ -65,7 +74,7 @@ public class TimedTraversal extends Thread {
             vv3.setGraphMouse(graphMouse3);
             graphMouse3.setMode(ModalGraphMouse.Mode.PICKING);
 
-            Transformer<Integer, String> transformer = integer -> String.valueOf(integer);
+            Transformer<Integer, String> transformer = String::valueOf;
             // Transformer maps the vertex number to a vertex property
             Transformer<Integer, Paint> vertexColorNodes = i -> {
                 if (i == 0) return Color.GREEN;
@@ -93,11 +102,17 @@ public class TimedTraversal extends Thread {
             agentsMap.add(vv3);
             agentsMap.requestFocus();
             agentsMap.updateUI();
+            agentTimeStepCounterNumber++;
+            agentTimeStepCounter.setText("Step number: " + agentTimeStepCounterNumber);
             try {
                 sleep(time);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-        }while (!agentNetwork.checkIfComplete());
+        }while (!agentNetwork.checkIfComplete() && !agentNetwork.checkIfAllAgentsInRoot());
+        int[] fast =  agentNetwork.lookForFastestAgent();
+        int[] slow = agentNetwork.lookForSlowestAgent();
+        fastestAgent.setText("Fastest Agent: " + fast[0] + " time: " + fast[1]);
+        slowestAgent.setText("Slowest Agent" + slow[0] + " time: " + slow[1]);
     }
 }

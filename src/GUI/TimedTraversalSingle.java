@@ -53,7 +53,7 @@ public class TimedTraversalSingle extends Thread {
         do {
             step++;
             Integer logged = Integer.valueOf(log[step]);
-            if (lastChar != logged) {
+            if (!lastChar.equals(logged)) {
                 if (!g.containsVertex(logged)) {
                     g.addVertex(logged);
 
@@ -80,7 +80,7 @@ public class TimedTraversalSingle extends Thread {
             vv3.setGraphMouse(graphMouse3);
             graphMouse3.setMode(ModalGraphMouse.Mode.PICKING);
 
-            Transformer<Integer, String> transformer = integer -> String.valueOf(integer);
+            Transformer<Integer, String> transformer = String::valueOf;
             // Transformer maps the vertex number to a vertex property
             int finalStep = step;
             Transformer<Integer, Paint> vertexColor1 = i -> {

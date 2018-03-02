@@ -8,9 +8,9 @@ import java.util.LinkedList;
 import java.util.Map;
 
 public class AgentNetwork {
-    private LinkedList<Agent> allAgents = new LinkedList<Agent>();
-    private HashMap<Integer, Node> currentTree = new HashMap<Integer, Node>();
-    private LinkedList<Integer> containsAgents = new LinkedList<Integer>();
+    private LinkedList<Agent> allAgents = new LinkedList<>();
+    private HashMap<Integer, Node> currentTree = new HashMap<>();
+    private LinkedList<Integer> containsAgents = new LinkedList<>();
     private Trad trad;
     private int timestep = 0;
 
@@ -96,6 +96,51 @@ public class AgentNetwork {
         else{
             return false;
         }
+    }
+
+    public int[] lookForFastestAgent(){
+        Agent fastestAgent = null;
+        int fastStep = Integer.MAX_VALUE;
+        for(Agent fastAgent : allAgents){
+            String[] time = fastAgent.sendLog().split(",");
+            int stepper = 1;
+            for(int i = 1;i<time.length;i++){
+                if(time[i].equals(time[i-1]) && time[i].equals("0")){
+                    stepper--;
+                }
+                else{
+                    stepper++;
+                }
+            }
+            if( stepper < fastStep){
+                fastestAgent = fastAgent;
+                fastStep = stepper;
+            }
+        }
+        int[] returner = {fastestAgent.getId(),fastStep};
+        return returner;
+    }
+
+    public int[] lookForSlowestAgent(){
+        Agent slowestAgent = null;
+        int slowStep = 0;
+        for(Agent slowAgent : allAgents){
+            String[] time = slowAgent.sendLog().split(",");
+            int stepper = 1;
+            for(int i = 1;i<time.length;i++){
+                if(time[i].equals(time[i-1]) && time[i].equals("0")){
+                    stepper--;
+                }else{
+                    stepper++;
+                }
+            }
+            if( stepper > slowStep){
+                slowestAgent = slowAgent;
+                slowStep = stepper;
+            }
+        }
+        int[] returner = {slowestAgent.getId(),slowStep};
+        return returner;
     }
 
     public boolean checkIfAllAgentsInRoot() {

@@ -5,7 +5,7 @@ import java.util.LinkedList;
 public class Node {
     private int id;
     private Edge toParent = null;
-    private LinkedList<Edge> children = new LinkedList<Edge>();
+    private LinkedList<Edge> children = new LinkedList<>();
 
     public Node(int id){
         this.id=id;

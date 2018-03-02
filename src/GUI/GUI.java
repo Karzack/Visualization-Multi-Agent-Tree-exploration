@@ -44,6 +44,10 @@ public class GUI extends JPanel {
     private JCheckBox timedTraversalCheckBox;
     private JButton resetBtn;
     private JTextField txtTImeInterval;
+    private JLabel fastestAgent;
+    private JLabel slowestAgent;
+    private JLabel agentTimeStepCounter;
+    private int agentTimeStepCounterNumber = 0;
     private JButton fileReaderBtn;
     private Trad trad;
     private AgentNetwork agentNetwork;
@@ -56,24 +60,18 @@ public class GUI extends JPanel {
 
         agentsBtn.setEnabled(false);
         // Transformer maps the vertex number to a vertex property
-        Transformer<Integer, Paint> vertexColor = new Transformer<Integer, Paint>() {
-            public Paint transform(Integer i) {
-                if (i == 0) return Color.GREEN;
-                return Color.RED;
-            }
+        Transformer<Integer, Paint> vertexColor = i -> {
+            if (i == 0) return Color.GREEN;
+            return Color.RED;
         };
-        Transformer<String, Paint> edgesColor = new Transformer<String, Paint>() {
-            public Paint transform(String i) {
-                if (i == "") return Color.GREEN;
-                return Color.RED;
-            }
+        Transformer<String, Paint> edgesColor = i -> {
+            if (i == "") return Color.GREEN;
+            return Color.RED;
         };
 
-        Transformer<Integer, Shape> vertexSize = new Transformer<Integer, Shape>() {
-            public Shape transform(Integer i) {
-                Ellipse2D circle = new Ellipse2D.Double(0, 0, 8, 8);
-                return circle;
-            }
+        Transformer<Integer, Shape> vertexSize = i -> {
+            Ellipse2D circle = new Ellipse2D.Double(0, 0, 8, 8);
+            return circle;
         };
 
         drawBtn.addActionListener(e -> {
@@ -102,7 +100,7 @@ public class GUI extends JPanel {
                 vv3.setGraphMouse(graphMouse3);
                 graphMouse3.setMode(ModalGraphMouse.Mode.PICKING);
 
-                Transformer<Integer, String> transformer = integer -> String.valueOf(integer);
+                Transformer<Integer, String> transformer = String::valueOf;
                 // Transformer maps the vertex number to a vertex property
                 Transformer<Integer, Paint> vertexColor1 = i -> {
                     if (i == 0) return Color.GREEN;
@@ -159,7 +157,7 @@ public class GUI extends JPanel {
                 vv3.setGraphMouse(graphMouse3);
                 graphMouse3.setMode(ModalGraphMouse.Mode.PICKING);
 
-                Transformer<Integer, String> transformer = integer -> String.valueOf(integer);
+                Transformer<Integer, String> transformer = String::valueOf;
                 // Transformer maps the vertex number to a vertex property
                 Transformer<Integer, Paint> vertexColor1 = i -> {
                     if (i == 0) return Color.GREEN;
@@ -214,7 +212,7 @@ public class GUI extends JPanel {
                 vv3.setGraphMouse(graphMouse3);
                 graphMouse3.setMode(ModalGraphMouse.Mode.PICKING);
 
-                Transformer<Integer, String> transformer = integer -> String.valueOf(integer);
+                Transformer<Integer, String> transformer = String::valueOf;
                 // Transformer maps the vertex number to a vertex property
                 Transformer<Integer, Paint> vertexColorNodes = i -> {
                     if (i == 0) return Color.GREEN;
@@ -242,9 +240,17 @@ public class GUI extends JPanel {
                 agentsMap.add(vv3);
                 agentsMap.requestFocus();
                 agentsMap.updateUI();
+                agentTimeStepCounterNumber++;
+                agentTimeStepCounter.setText("Step number: " + agentTimeStepCounterNumber);
+                if(agentNetwork.checkIfAllAgentsInRoot() && agentNetwork.checkIfComplete()){
+                    int[] fast =  agentNetwork.lookForFastestAgent();
+                    int[] slow = agentNetwork.lookForSlowestAgent();
+                    fastestAgent.setText("Fastest Agent: " + fast[0] + " time: " + fast[1]);
+                    slowestAgent.setText("Slowest Agent" + slow[0] + " time: " + slow[1]);
+                }
             } else {
                 int time = Integer.parseInt(txtTImeInterval.getText());
-                new TimedTraversal(trad, agentNetwork, mapsPane, agentsMap,time).start();
+                new TimedTraversal(trad, agentNetwork, mapsPane, agentsMap,time,fastestAgent,slowestAgent, agentTimeStepCounter,agentTimeStepCounterNumber).start();
             }
         });
 
@@ -286,7 +292,7 @@ public class GUI extends JPanel {
                     vv3.setGraphMouse(graphMouse3);
                     graphMouse3.setMode(ModalGraphMouse.Mode.PICKING);
 
-                    Transformer<Integer, String> transformer = integer -> String.valueOf(integer);
+                    Transformer<Integer, String> transformer = String::valueOf;
                     // Transformer maps the vertex number to a vertex property
                     Transformer<Integer, Paint> vertexColor1 = i -> {
                         if (i == 0) return Color.GREEN;
