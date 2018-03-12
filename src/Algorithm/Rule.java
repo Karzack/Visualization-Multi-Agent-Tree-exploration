@@ -1,18 +1,26 @@
 package Algorithm;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.LinkedList;
+import javax.tools.JavaCompiler;
+import javax.tools.ToolProvider;
 
 public class Rule {
     private String symbol = null;
     private LinkedList<String> parameterList = new LinkedList<>();
     private int noofParameters = 0;
     private final String varSequence;
-    private LinkedList<Object> localTables = new LinkedList<>();
+    private LinkedList<String> localTables = new LinkedList<>();
     private String[] code;
     private String transitionSymbol = "";
     private NewSymbol newSymbol;
 
-    public Rule(String varSequence, LinkedList<Object> varTable, NewSymbol newSymbol) {
+    public Rule(String varSequence, LinkedList<String> varTable, NewSymbol newSymbol) {
         this.varSequence = varSequence;
         localTables = varTable;
         this.newSymbol = newSymbol;
@@ -30,7 +38,7 @@ public class Rule {
     public void setCode(Object termlist) {
     }
 
-    public void pushVarTable(LinkedList<Object> objects) {
+    public void pushVarTable(LinkedList<String> objects) {
         localTables.addAll(objects);
     }
 
@@ -45,11 +53,13 @@ public class Rule {
     }
 
     public void setTransitionSymbol(String transitionSymbol) {
-        this.transitionSymbol = transitionSymbol;
+        this.transitionSymbol = ""+transitionSymbol;
     }
 
     public void addLocalVariable(String token) {
             localTables.remove(token);
+            parameterList.remove(token);
+            noofParameters--;
             parameterList.add(token);
             noofParameters++;
     }
@@ -82,16 +92,76 @@ public class Rule {
 
     }
 
-    public LinkedList<Object> makeExpressionEvaluator(String exp) {
+    public LinkedList<Object> makeExpressionEvaluator(String exp) throws IOException, ClassNotFoundException {
+        LinkedList<Object> returner = new LinkedList<>();
         String symbol = newSymbol.getNewSymbol();
-        String text = "";
-        return null;
+        String parameters = "";
+        String className = "Action" + symbol;
+        File root = new File("src/Commands");
+        File sourceFile = new File(root, "/Action" + symbol +".java");
+        sourceFile.getParentFile().mkdirs();
+        parameters += "int " + parameterList.get(0);
+        for (int i = 1; i < parameterList.size(); i++){
+            parameters += ",int " + parameterList.get(i);
+        }
+        String code = "package Commands;\n" +
+                "public class " + className +  "{" + " \n " +
+                "   public int activate" + symbol + "(" + parameters + "){ \n " +
+                "System.out.println(\"This is Action" + symbol + "\"); \n" +
+                "       return " + exp + "; \n " +
+                "}" +
+                "}";
+
+        Files.write(sourceFile.toPath(),code.getBytes(StandardCharsets.UTF_8));
+        JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+        compiler.run(null,null,null,sourceFile.getPath());
+        URLClassLoader classLoader = URLClassLoader.newInstance(new URL[] { root.toURI().toURL() });
+        Class<?> cls = Class.forName("Commands.Action"+symbol, true, classLoader);
+        try {
+            Object instance = cls.newInstance();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        returner.add("Action"+symbol);
+        return returner;
     }
 
-    public LinkedList<Object> makeBooleanEvaluator(String exp) {
+    public LinkedList<Object> makeBooleanEvaluator(String exp) throws IOException, ClassNotFoundException {
+        LinkedList<Object> returner = new LinkedList<>();
         String symbol = newSymbol.getNewSymbol();
-        String text = "";
-        return null;
+        String parameters = "";
+        String className = "Action" + symbol;
+        File root = new File("src/Commands");
+        File sourceFile = new File(root, "/Action" + symbol +".java");
+        sourceFile.getParentFile().mkdirs();
+        parameters += "int " + parameterList.get(0);
+        for (int i = 1; i < parameterList.size(); i++){
+            parameters += ",int " + parameterList.get(i);
+        }
+        String code = "package Commands;\n" +
+                "public class " + className +  "{" + " \n " +
+                "   public boolean activate" + symbol + "(" + parameters + "){ \n " +
+                "System.out.println(\"This is Action" + symbol + "\"); \n" +
+                "       return " + exp + "; \n " +
+                "}" +
+                "}";
+
+        Files.write(sourceFile.toPath(),code.getBytes(StandardCharsets.UTF_8));
+        JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+        compiler.run(null,null,null,sourceFile.getPath());
+        URLClassLoader classLoader = URLClassLoader.newInstance(new URL[] { root.toURI().toURL() });
+        Class<?> cls = Class.forName("Commands.Action"+symbol, true, classLoader);
+        try {
+            Object instance = cls.newInstance();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        returner.add("Action"+symbol);
+        return returner;
     }
 }
 
