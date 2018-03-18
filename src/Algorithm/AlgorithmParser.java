@@ -8,12 +8,12 @@ import java.util.*;
 public class AlgorithmParser {
     private String valid = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM";
     private String varSequence ="a,b,c,d,k,l,m";
-    private Scanner scanner = new Scanner("S[k]->S[k/2];" +
-            "T->S;" +
+    private Scanner scanner = new Scanner("S[k]->S[4/2];"
+            /*"T->S;" +
             "Q[l]->T^k=1..10{Q[l-1]};" +
             "R[a][b][c][d]->?a<b*c-d{T[a-1]^i=b..c+d{F F G}}{T[a-d]};" +
-            "S[k][l][m]->A[k-1]B[l/2][m+1]X[k/2-l+1]D;");
-    private LinkedList<String> varTable = new LinkedList<>();
+            "S[k][l][m]->A[k-1]B[l/2][m+1]X[k/2-l+1]D;"*/);
+    private HashMap<String, Integer> varTable = new HashMap<>();
     private LinkedList<String> symTable = new LinkedList<>();
     private HashMap<String,Rule> ruleTable = new HashMap<>();
     private NewSymbol newSymbol = new NewSymbol();
@@ -24,13 +24,13 @@ public class AlgorithmParser {
 
 
     public AlgorithmParser(){
-        varTable.add("a");
-        varTable.add("b");
-        varTable.add("c");
-        varTable.add("d");
-        varTable.add("k");
-        varTable.add("l");
-        varTable.add("m");
+        varTable.put("a",0);
+        varTable.put("b",0);
+        varTable.put("c",0);
+        varTable.put("d",0);
+        varTable.put("k",0);
+        varTable.put("l",0);
+        varTable.put("m",0);
     }
 
     public HashMap parse(){
@@ -43,13 +43,14 @@ public class AlgorithmParser {
     public void ruleSeq() {
         if (scanner.hasNext()) {
             currentScan = new StringBuilder(scanner.next());
-            Rule rule = rule();
-            if (scanner.hasNext()) {
-                ruleSeq();
+            if (currentScan.length() > 0) {
+                Rule rule = rule();
+                if (scanner.hasNext()) {
+                    ruleSeq();
+                }
+                ruleTable.put(rule.getTransitionSymbol(), rule());
             }
-            ruleTable.put(rule.getTransitionSymbol(), rule());
         }
-
     }
 
     private Rule rule() {
@@ -77,7 +78,7 @@ public class AlgorithmParser {
         if(valid.contains(""+sym)) {
             if (currentScan.indexOf("[")==0) {
                 currentScan.deleteCharAt(0);
-                rule.pushVarTable(new LinkedList<>());
+                rule.pushVarTable(new HashMap<>());
                 rule.setNoofParameters(0);
                 localSeq(rule);
             } else if (currentScan.indexOf("->")!=0) {

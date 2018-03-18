@@ -2,10 +2,13 @@ package Algorithm;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.HashMap;
 import java.util.LinkedList;
 import javax.tools.JavaCompiler;
 import javax.tools.ToolProvider;
@@ -15,12 +18,12 @@ public class Rule {
     private LinkedList<String> parameterList = new LinkedList<>();
     private int noofParameters = 0;
     private final String varSequence;
-    private LinkedList<String> localTables = new LinkedList<>();
+    private HashMap<String, Integer> localTables;
     private String[] code;
     private String transitionSymbol = "";
     private NewSymbol newSymbol;
 
-    public Rule(String varSequence, LinkedList<String> varTable, NewSymbol newSymbol) {
+    public Rule(String varSequence, HashMap<String, Integer> varTable, NewSymbol newSymbol) {
         this.varSequence = varSequence;
         localTables = varTable;
         this.newSymbol = newSymbol;
@@ -38,8 +41,8 @@ public class Rule {
     public void setCode(Object termlist) {
     }
 
-    public void pushVarTable(LinkedList<String> objects) {
-        localTables.addAll(objects);
+    public void pushVarTable(HashMap<String,Integer> objects) {
+        localTables.putAll(objects);
     }
 
     public void popVarTable(){
@@ -65,13 +68,12 @@ public class Rule {
     }
 
     public void delLatestLocal() {
-        localTables.removeLast();
         parameterList.removeLast();
         noofParameters--;
     }
 
     public void addLatestLocal(String token) {
-        localTables.add(token);
+        localTables.put(token,0);
         parameterList.add(token);
         noofParameters++;
     }
@@ -106,7 +108,7 @@ public class Rule {
         }
         String code = "package Commands;\n" +
                 "public class " + className +  "{" + " \n " +
-                "   public int activate" + symbol + "(" + parameters + "){ \n " +
+                "   public int activate" + symbol +  "(" /*+ parameters */+ "){ \n " +
                 "System.out.println(\"This is Action" + symbol + "\"); \n" +
                 "       return " + exp + "; \n " +
                 "}" +
@@ -119,9 +121,15 @@ public class Rule {
         Class<?> cls = Class.forName("Commands.Action"+symbol, true, classLoader);
         try {
             Object instance = cls.newInstance();
+            Method method = cls.getMethod("activate"+symbol,String[].class);
+            method.invoke(null);
         } catch (InstantiationException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
             e.printStackTrace();
         }
         returner.add("Action"+symbol);
