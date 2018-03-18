@@ -43,7 +43,6 @@ public class AlgorithmParser {
     public void ruleSeq() {
         if (scanner.hasNext()) {
             currentScan = new StringBuilder(scanner.next());
-            System.out.println(currentScan.indexOf("<<"));
             Rule rule = rule();
             if (scanner.hasNext()) {
                 ruleSeq();
@@ -256,7 +255,7 @@ public class AlgorithmParser {
         return rule.makeExpressionEvaluator(exp);
     }
 
-    private LinkedList<Object> boolExp(Rule rule){
+    private LinkedList<Object> boolExp(Rule rule) throws IOException, ClassNotFoundException {
         String exp = "";
         while (currentScan.indexOf("]")!=0){
             exp += currentScan.charAt(0);
