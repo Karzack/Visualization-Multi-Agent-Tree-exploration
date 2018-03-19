@@ -60,11 +60,11 @@ public class Rule {
     }
 
     public void addLocalVariable(String token) {
-            localTables.remove(token);
-            parameterList.remove(token);
-            noofParameters--;
-            parameterList.add(token);
-            noofParameters++;
+        localTables.remove(token);
+        parameterList.remove(token);
+        noofParameters--;
+        parameterList.add(token);
+        noofParameters++;
     }
 
     public void delLatestLocal() {
@@ -106,11 +106,14 @@ public class Rule {
         for (int i = 1; i < parameterList.size(); i++){
             parameters += ",int " + parameterList.get(i);
         }
+        String test = Commands.JavaCodeParser.parseCoder(exp);
         String code = "package Commands;\n" +
+                "import java.lang.Math.*; \n" +
+                "import java.util.HashMap; \n" +
                 "public class " + className +  "{" + " \n " +
-                "   public int activate" + symbol +  "(" /*+ parameters */+ "){ \n " +
+                "   public int activate" + symbol +  "(HashMap<String,Integer> vars){ \n " +
                 "System.out.println(\"This is Action" + symbol + "\"); \n" +
-                "       return " + exp + "; \n " +
+                "       return " + test + "; \n " +
                 "}" +
                 "}";
 
@@ -138,6 +141,7 @@ public class Rule {
 
     public LinkedList<Object> makeBooleanEvaluator(String exp) throws IOException, ClassNotFoundException {
         LinkedList<Object> returner = new LinkedList<>();
+
         String symbol = newSymbol.getNewSymbol();
         String parameters = "";
         String className = "Action" + symbol;
@@ -148,11 +152,15 @@ public class Rule {
         for (int i = 1; i < parameterList.size(); i++){
             parameters += ",int " + parameterList.get(i);
         }
+
+        String test = Commands.JavaCodeParser.parseCoder(exp);
         String code = "package Commands;\n" +
+                "import java.lang.Math.*; \n" +
+                "import java.util.HashMap; \n" +
                 "public class " + className +  "{" + " \n " +
-                "   public boolean activate" + symbol + "(" + parameters + "){ \n " +
-                "System.out.println(\"This is Action" + symbol + "\"); \n" +
-                "       return " + exp + "; \n " +
+                "   public boolean activate" + "(HashMap<String,Integer> vars){ \n " +
+                "System.out.println(\"This is Action" + symbol + "\" + vars.get(\"a\")); \n" +
+                "       return " + test + "; \n " +
                 "}" +
                 "}";
 
@@ -163,13 +171,21 @@ public class Rule {
         Class<?> cls = Class.forName("Commands.Action"+symbol, true, classLoader);
         try {
             Object instance = cls.newInstance();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
+            Method method = cls.getMethod("activate");
+            method.invoke(instance);
         } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
             e.printStackTrace();
         }
         returner.add("Action"+symbol);
         return returner;
     }
+
+
 }
 

@@ -7,12 +7,15 @@ import java.util.*;
 
 public class AlgorithmParser {
     private String valid = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM";
-    private String varSequence ="a,b,c,d,k,l,m";
-    private Scanner scanner = new Scanner("S[k]->S[4/2];"
+    private String varSequence ="a,b,c,d,e,g,h,i,j,k,l,m";
+    private Scanner scanner = new Scanner("Root->^i=1..k{X[t][floor(i/(log(i,2)+1))]};" +
+            "X[m][j]->?m>0{X[m-1][j]}{B[j]};" +
+            "B[j] -> ?j>0{^i=2..t{T}B[j-1]} {^i=1..t{T}};"
             /*"T->S;" +
             "Q[l]->T^k=1..10{Q[l-1]};" +
             "R[a][b][c][d]->?a<b*c-d{T[a-1]^i=b..c+d{F F G}}{T[a-d]};" +
-            "S[k][l][m]->A[k-1]B[l/2][m+1]X[k/2-l+1]D;"*/);
+            "S[k][l][m]->A[k-1]B[l/2][m+1]X[k/2-l+1]D;"
+            */);
     private HashMap<String, Integer> varTable = new HashMap<>();
     private LinkedList<String> symTable = new LinkedList<>();
     private HashMap<String,Rule> ruleTable = new HashMap<>();
@@ -28,6 +31,7 @@ public class AlgorithmParser {
         varTable.put("b",0);
         varTable.put("c",0);
         varTable.put("d",0);
+        varTable.put("j",0);
         varTable.put("k",0);
         varTable.put("l",0);
         varTable.put("m",0);
@@ -48,7 +52,7 @@ public class AlgorithmParser {
                 if (scanner.hasNext()) {
                     ruleSeq();
                 }
-                ruleTable.put(rule.getTransitionSymbol(), rule());
+                ruleTable.put(rule.getTransitionSymbol(), rule);
             }
         }
     }
@@ -73,9 +77,12 @@ public class AlgorithmParser {
 
 
     private void leftSide(Rule rule) {
-        String sym = String.valueOf(currentScan.charAt(0));
-        currentScan.deleteCharAt(0);
-        if(valid.contains(""+sym)) {
+        String sym = "";
+        while (valid.contains(String.valueOf(currentScan.charAt(0)))) {
+            sym += String.valueOf(currentScan.charAt(0));
+            currentScan.deleteCharAt(0);
+        }
+        if(sym.length()>0) {
             if (currentScan.indexOf("[")==0) {
                 currentScan.deleteCharAt(0);
                 rule.pushVarTable(new HashMap<>());
@@ -100,6 +107,7 @@ public class AlgorithmParser {
             if(currentScan.indexOf("]")==0){
                 currentScan.deleteCharAt(0);
                 if (currentScan.indexOf("[")==0){
+                    currentScan.deleteCharAt(0);
                     localSeq(rule);
                 }
                 else if(currentScan.indexOf("->")!=0){
@@ -144,6 +152,7 @@ public class AlgorithmParser {
         else if(valid.contains(token)){
             return symExp(rule);
         }
+        currentScan.deleteCharAt(0);
         return null;
     }
 
@@ -159,12 +168,12 @@ public class AlgorithmParser {
                     rule.addLatestLocal(token);
                     LinkedList<Object> exp1 = innerExp("..", rule);
                     returner.add(exp1);
-                    //if (currentScan.indexOf("..")==0) {
-                      //  currentScan.delete(0,2);
+                    if (currentScan.indexOf("..")==0) {
+                        currentScan.delete(0,2);
                         LinkedList exp2 = innerExp("{", rule);
                         returner.add(exp2);
                         if (currentScan.indexOf("{")==0) {
-                            LinkedList repetition = termExpSeq(rule);
+                            LinkedList<Object> repetition = termExpSeq(rule);
                             returner.add(repetition);
                             if (currentScan.indexOf("}")!=0) {
                                 System.out.println("Error: Loop error 1");
@@ -173,7 +182,7 @@ public class AlgorithmParser {
                             return returner;
 
                         }
-                    //}
+                    }
                 }
             }
         return returner;
@@ -222,6 +231,9 @@ public class AlgorithmParser {
                 actualList = innerExpSeq(rule);
 
             }
+            else if(currentScan.indexOf("}")==0) {
+                currentScan.deleteCharAt(0);
+            }
             returner.add(actualList);
             return returner;
         }
@@ -248,17 +260,17 @@ public class AlgorithmParser {
             exp += currentScan.charAt(0);
             currentScan.deleteCharAt(0);
         }
-        if(follow.length()>1) {
+        /*if(follow.length()>1) {
             currentScan.delete(0, follow.length());
         }else{
             currentScan.deleteCharAt(0);
-        }
+        }*/
         return rule.makeExpressionEvaluator(exp);
     }
 
     private LinkedList<Object> boolExp(Rule rule) throws IOException, ClassNotFoundException {
         String exp = "";
-        while (currentScan.indexOf("]")!=0){
+        while (currentScan.indexOf("{")!=0){
             exp += currentScan.charAt(0);
             currentScan.deleteCharAt(0);
         }
