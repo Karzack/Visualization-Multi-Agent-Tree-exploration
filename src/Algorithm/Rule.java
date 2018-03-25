@@ -10,8 +10,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.LinkedList;
-import javax.tools.JavaCompiler;
-import javax.tools.ToolProvider;
+
 
 public class Rule {
     private String symbol = null;
@@ -19,13 +18,13 @@ public class Rule {
     private int noofParameters = 0;
     private final String varSequence;
     private HashMap<String, Integer> localTables;
-    private String[] code;
+    private LinkedList<String> code;
     private String transitionSymbol = "";
     private NewSymbol newSymbol;
 
     public Rule(String varSequence, HashMap<String, Integer> varTable, NewSymbol newSymbol) {
         this.varSequence = varSequence;
-        localTables = varTable;
+        localTables = (HashMap<String, Integer>) varTable.clone();
         this.newSymbol = newSymbol;
         for (int i = 0; i < varSequence.length(); i+=2) {
             parameterList.add(String.valueOf(varSequence.charAt(i)));
@@ -38,7 +37,13 @@ public class Rule {
         return transitionSymbol;
     }
 
-    public void setCode(Object termlist) {
+    public void setCode(LinkedList<String> termList) {
+        this.code = (LinkedList<String>) termList.clone();
+        System.out.println(termList.toString());
+    }
+
+    public LinkedList<String> getCode() {
+        return code;
     }
 
     public void pushVarTable(HashMap<String,Integer> objects) {
@@ -78,9 +83,6 @@ public class Rule {
         noofParameters++;
     }
 
-    public void setCode(String[] code){
-        this.code = code;
-    }
 
 
 
@@ -94,98 +96,36 @@ public class Rule {
 
     }
 
-    public LinkedList<Object> makeExpressionEvaluator(String exp) throws IOException, ClassNotFoundException {
-        LinkedList<Object> returner = new LinkedList<>();
+    public LinkedList<String> makeExpressionEvaluator(String exp) {
+        LinkedList<String> returner = new LinkedList<>();
         String symbol = newSymbol.getNewSymbol();
-        String parameters = "";
-        String className = "Action" + symbol;
-        File root = new File("src/Commands");
-        File sourceFile = new File(root, "/Action" + symbol +".java");
-        sourceFile.getParentFile().mkdirs();
-        parameters += "int " + parameterList.get(0);
-        for (int i = 1; i < parameterList.size(); i++){
-            parameters += ",int " + parameterList.get(i);
-        }
-        String test = Commands.JavaCodeParser.parseCoder(exp);
-        String code = "package Commands;\n" +
-                "import java.lang.Math.*; \n" +
-                "import java.util.HashMap; \n" +
-                "public class " + className +  "{" + " \n " +
+        String expression = Commands.JavaCodeParser.parseCoder(exp);
+        String code =
                 "   public int activate" + symbol +  "(HashMap<String,Integer> vars){ \n " +
-                "System.out.println(\"This is Action" + symbol + "\"); \n" +
-                "       return " + test + "; \n " +
-                "}" +
-                "}";
-
-        Files.write(sourceFile.toPath(),code.getBytes(StandardCharsets.UTF_8));
-        JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-        compiler.run(null,null,null,sourceFile.getPath());
-        URLClassLoader classLoader = URLClassLoader.newInstance(new URL[] { root.toURI().toURL() });
-        Class<?> cls = Class.forName("Commands.Action"+symbol, true, classLoader);
-        try {
-            Object instance = cls.newInstance();
-            Method method = cls.getMethod("activate"+symbol,String[].class);
-            method.invoke(null);
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        }
-        returner.add("Action"+symbol);
+                "       return " + expression + "; \n " +
+                "} \n";
+        returner.add(symbol);
+        returner.add(code);
         return returner;
     }
 
-    public LinkedList<Object> makeBooleanEvaluator(String exp) throws IOException, ClassNotFoundException {
-        LinkedList<Object> returner = new LinkedList<>();
-
+    public LinkedList<String> makeBooleanEvaluator(String exp) {
+        LinkedList<String> returner = new LinkedList<>();
         String symbol = newSymbol.getNewSymbol();
-        String parameters = "";
-        String className = "Action" + symbol;
-        File root = new File("src/Commands");
-        File sourceFile = new File(root, "/Action" + symbol +".java");
-        sourceFile.getParentFile().mkdirs();
-        parameters += "int " + parameterList.get(0);
-        for (int i = 1; i < parameterList.size(); i++){
-            parameters += ",int " + parameterList.get(i);
-        }
+        String expression = Commands.JavaCodeParser.parseCoder(exp);
+        String code =
+                "   public boolean activate" + symbol + "(HashMap<String,Integer> vars){ \n " +
+                "       return " + expression + "; \n " +
+                "} \n";
 
-        String test = Commands.JavaCodeParser.parseCoder(exp);
-        String code = "package Commands;\n" +
-                "import java.lang.Math.*; \n" +
-                "import java.util.HashMap; \n" +
-                "public class " + className +  "{" + " \n " +
-                "   public boolean activate" + "(HashMap<String,Integer> vars){ \n " +
-                "System.out.println(\"This is Action" + symbol + "\" + vars.get(\"a\")); \n" +
-                "       return " + test + "; \n " +
-                "}" +
-                "}";
-
-        Files.write(sourceFile.toPath(),code.getBytes(StandardCharsets.UTF_8));
-        JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-        compiler.run(null,null,null,sourceFile.getPath());
-        URLClassLoader classLoader = URLClassLoader.newInstance(new URL[] { root.toURI().toURL() });
-        Class<?> cls = Class.forName("Commands.Action"+symbol, true, classLoader);
-        try {
-            Object instance = cls.newInstance();
-            Method method = cls.getMethod("activate");
-            method.invoke(instance);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        }
-        returner.add("Action"+symbol);
+        returner.add(symbol);
+        returner.add(code);
         return returner;
     }
 
 
+    public HashMap<String, Integer> getLocalVariables() {
+        return localTables;
+    }
 }
 

@@ -10,6 +10,7 @@ public final class JavaCodeParser {
     public static String parseCoder(String exp) {
         expression = new StringBuilder(exp);
         locator = expression.length() - 1;
+        boolean forceInt= false;
         while (locator >=0 ) {
             if (variables.contains(String.valueOf(expression.charAt(locator)))) {
                 int substringCalc = 1;
@@ -32,16 +33,31 @@ public final class JavaCodeParser {
                 String substring = expression.substring(locator, locator + substringCalc);
                 switch (substring) {
                     case "floor":
-                        expression.insert(locator, "Math.");
+                        forceInt=true;
+                        break;
+                    case "abs":
+                        forceInt=true;
+                        break;
+                    case "ceil":
+                        forceInt=true;
                         break;
                     case "sin":
-                        expression.insert(locator, "Math.");
+                        forceInt=true;
                         break;
                     case "cos":
-                        expression.insert(locator, "Math.");
+                        forceInt=true;
                         break;
                     case "log":
-                        expression.insert(locator, "Math.");
+                        forceInt=true;
+                        break;
+                    case "sqrt":
+                        forceInt=true;
+                        break;
+                    case "tan":
+                        forceInt=true;
+                        break;
+                    case "round":
+                        forceInt=true;
                         break;
                     default:
                         expression.delete(locator, locator + substringCalc);
@@ -50,6 +66,9 @@ public final class JavaCodeParser {
                 }
             }
             locator--;
+        }
+        if (forceInt){
+            expression.insert(0,"(int)");
         }
         return expression.toString();
 
