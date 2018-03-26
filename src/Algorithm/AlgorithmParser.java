@@ -1,6 +1,7 @@
 package Algorithm;
 
 
+import javax.sound.midi.Soundbank;
 import javax.tools.JavaCompiler;
 import javax.tools.ToolProvider;
 import java.io.File;
@@ -51,7 +52,7 @@ public class AlgorithmParser {
 
 
     public AlgorithmParser(){
-       varTable.put("i",6);
+       varTable.put("i",24);
        varTable.put("k",4);
        varTable.put("t",8);
        varTable.put("m",12);
@@ -156,9 +157,11 @@ public class AlgorithmParser {
     private void local(Rule rule) {
         String token = String.valueOf(currentScan.charAt(0));
         currentScan.deleteCharAt(0);
-        if (!symTable.contains(token)){
+        if (valid.contains(token)){
             rule.addLocalVariable(token);
-            symTable.add(token);
+            if(!symTable.contains(token)) {
+                symTable.add(token);
+            }
         }
         else{
             System.out.println("error, localVar variable error, not in table: " + token);
@@ -358,78 +361,81 @@ public class AlgorithmParser {
 
 
     public void executeRuleNoParam(Rule rule) {
-        LinkedList<String> exectutor = rule.getCode();
-        //rule.addLocalVariable();
+        LinkedList<String> executor = rule.getCode();
         int index = 0;
-        while (index < exectutor.size()) {
-            switch (exectutor.get(index)) {
+            switch (executor.get(index)) {
                 case "^":
                     System.out.println("start Loop");
-                    index = executeLoop(index,exectutor,rule);
+                    executeLoop(index,executor,rule);
+                    System.out.println("Loop Finished");
                     break;
                 case "?":
                     System.out.println("start Query");
-                    index = executeQuery(index,exectutor,rule);
+                    executeQuery(index,executor,rule);
+                    System.out.println("Query Finished");
                     break;
                 case "S":
                     System.out.println("start Rule");
-                    index = executeSymbol(index,exectutor,rule);
+                    executeSymbol(index,executor,rule);
+                    System.out.println("Rule Finished");
                     break;
             }
-        }
     }
 
 
 
     public void executeRuleOneParam(Rule rule,int param1) {
-        LinkedList<String> exectutor = rule.getCode();
-        //rule.addLocalVariable();
+        LinkedList<String> executor = rule.getCode();
+        rule.setLocalVariable(rule.getParameters().get(0),param1);
         int index = 0;
-        while (index < exectutor.size()) {
-            switch (exectutor.get(index)) {
+            switch (executor.get(index)) {
                 case "^":
                     System.out.println("start Loop");
-                    index = executeLoop(index,exectutor,rule);
+                    executeLoop(index,executor,rule);
+                    System.out.println("Loop Finished");
                     break;
                 case "?":
                     System.out.println("start Query");
-                    index = executeQuery(index,exectutor,rule);
+                    executeQuery(index,executor,rule);
+                    System.out.println("Query Finished");
                     break;
                 case "S":
                     System.out.println("start Rule");
-                    index = executeSymbol(index,exectutor,rule);
+                    executeSymbol(index,executor,rule);
+                    System.out.println("Rule Finished");
                     break;
             }
-        }
     }
 
 
     private void executeRuleTwoParam(Rule rule, int param1, int param2) {
         LinkedList<String> executor = rule.getCode();
-        //rule.addLocalVariable();
+        rule.setLocalVariable(rule.getParameters().get(0),param1);
+        rule.setLocalVariable(rule.getParameters().get(1),param2);
         int index = 0;
-        while (index < executor.size()) {
             switch (executor.get(index)) {
                 case "^":
                     System.out.println("start Loop");
-                    index = executeLoop(index,executor,rule);
+                    executeLoop(index,executor,rule);
+                    System.out.println("Loop Finished");
+
                     break;
                 case "?":
                     System.out.println("start Query");
-                    index = executeQuery(index,executor,rule);
+                    executeQuery(index,executor,rule);
+                    System.out.println("Query Finished");
                     break;
                 case "S":
                     System.out.println("start Rule");
-                    index = executeSymbol(index,executor,rule);
+                    executeSymbol(index,executor,rule);
+                    System.out.println("Rule Finished");
                     break;
             }
-
-        }
     }
 
     public int executeExpression(int symbol, HashMap<String,Integer> variables){
         try {
-            instance = actionList.newInstance();
+            //instance = actionList.newInstance();
             Method method = actionList.getDeclaredMethod("activate"+symbol,HashMap.class);
             return (int) method.invoke(instance,variables);
         } catch (NoSuchMethodException e) {
@@ -438,15 +444,13 @@ public class AlgorithmParser {
             e.printStackTrace();
         } catch (InvocationTargetException e) {
             e.printStackTrace();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
         }
         return 0;
     }
 
     private boolean executeBoolean(int symbol, HashMap<String, Integer> variables) {
         try {
-            instance = actionList.newInstance();
+            //instance = actionList.newInstance();
             Method method = actionList.getDeclaredMethod("activate"+symbol,HashMap.class);
             return (boolean) method.invoke(instance,variables);
         } catch (NoSuchMethodException e) {
@@ -454,8 +458,6 @@ public class AlgorithmParser {
         }catch (IllegalAccessException e) {
             e.printStackTrace();
         } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        } catch (InstantiationException e) {
             e.printStackTrace();
         }
         return false;
@@ -466,53 +468,74 @@ public class AlgorithmParser {
             index+=2;
             switch (executor.get(index)){
                 case "^":
-                    index = executeLoop(index,executor,rule);
+                    index = executeLoop(index,executor,rule) +1;
                     break;
                 case "?":
-                    index = executeQuery(index,executor,rule);
+                    index = executeQuery(index,executor,rule)+1;
                     break;
                 case "S":
-                    index = executeSymbol(index,executor,rule);
+                    index = executeSymbol(index,executor,rule)+1;
             }
         }else{
-            while (executor.get(index).equals("else")){
+            while (!executor.get(index).equals("else")){
                 index++;
             }
+            index++;
             switch (executor.get(index)){
                 case "^":
                     index = executeLoop(index,executor,rule);
+                    index++;
                     break;
                 case "?":
                     index = executeQuery(index,executor,rule);
+                    index++;
                     break;
                 case "S":
                     index = executeSymbol(index,executor,rule);
+                    index++;
             }
         }
         return index;
     }
 
     private int executeSymbol(int index, LinkedList<String> executor, Rule rule) {
-        if(index+3<executor.size()) {
-            if (!valid.contains(executor.get(index + 3)) && !executor.get(index+3).equals("^") && !executor.get(index+3).equals("?")) {
-                int paramOne = executeExpression(Integer.parseInt(executor.get(index+2)),rule.getLocalVariables());
-                int paramTwo = executeExpression(Integer.parseInt(executor.get(index+3)),rule.getLocalVariables());
+        if(index+2<executor.size()) {
+            if(index+3<executor.size()) {
+                if (!valid.contains(executor.get(index + 3)) && !executor.get(index + 3).equals("^") && !executor.get(index + 3).equals("?")) {
+                    //Execute Rule with 2 Parameters!
+                    int paramOne = executeExpression(Integer.parseInt(executor.get(index + 2)), rule.getLocalVariables());
+                    int paramTwo = executeExpression(Integer.parseInt(executor.get(index + 3)), rule.getLocalVariables());
+                    index++;
+                    System.out.println("execute symbol: " + executor.get(index).toString() + "[" + paramOne + "][" + paramTwo + "]");
 
-                System.out.println("execute symbol: " + executor.get(index+1).toString());
+                    executeRuleTwoParam(ruleTable.get(executor.get(index)), paramOne, paramTwo);
+                    index += 3;
+                }
+            } else {
+                    if (!valid.contains(executor.get(index + 2)) && !executor.get(index + 2).equals("^") && !executor.get(index + 2).equals("?")) {
+                        //Execute Rule with one Parameter!
+                        int paramOne = executeExpression(Integer.parseInt(executor.get(index + 2)), rule.getLocalVariables());
+                        index++;
+                        System.out.println("execute symbol: " + executor.get(index).toString() + "[" + paramOne + "]");
 
-                executeRuleTwoParam(ruleTable.get(executor.get(index+1)),paramOne,paramTwo);
-            }else if(!valid.contains(executor.get(index + 2)) && !executor.get(index+2).equals("^") && !executor.get(index+2).equals("?")){
+                        executeRuleOneParam(ruleTable.get(executor.get(index)), paramOne);
+                        index += 2;
+                    } else {
+                        //Execute Rule without Parameters
+                        index++;
+                        System.out.println("execute symbol: " + executor.get(index).toString());
 
-                int paramOne = executeExpression(Integer.parseInt(executor.get(index+2)),rule.getLocalVariables());
-                System.out.println("execute symbol: " + executor.get(index+1).toString());
-                index+=3;
-                executeRuleOneParam(ruleTable.get(executor.get(index+1)),paramOne);
-            }else{
-                System.out.println("execute symbol: " + executor.get(index+1).toString());
-                index+=2;
-                executeRuleNoParam(ruleTable.get(executor.get(index+1)));
-            }
-        }
+                        executeRuleNoParam(ruleTable.get(executor.get(index)));
+                        index++;
+                    }
+                }
+            } else {
+                    //Execute Rule without Parameters
+                    index++;
+                    System.out.println("execute symbol: " + executor.get(index).toString());
+                    executeRuleNoParam(ruleTable.get(executor.get(index)));
+                    index++;
+                }
 
         return index;
     }
@@ -521,15 +544,24 @@ public class AlgorithmParser {
         int top = executeExpression(Integer.parseInt(executor.get(index+3)),rule.getLocalVariables());
         index += 4;
         for (int i = iterator; i < top; i++) {
+            rule.setLocalVariable("i",i);
             switch (executor.get(index)){
                 case "^":
-                    index = executeLoop(index,executor,rule);
+                    System.out.println("Execute Loop");
+                    executeLoop(index,executor,rule);
+                    System.out.println("Ending Loop");
                     break;
                 case "?":
-                    index = executeQuery(index,executor,rule);
+                    System.out.println("Execute Query");
+                    executeQuery(index,executor,rule);
+                    System.out.println("Ening Query");
+
                     break;
                 case "S":
-                    index = executeSymbol(index,executor,rule);
+                    System.out.println("Execute Symbol");
+                    executeSymbol(index,executor,rule);
+                    System.out.println("Ending Symbol");
+                    break;
             }
 
         }

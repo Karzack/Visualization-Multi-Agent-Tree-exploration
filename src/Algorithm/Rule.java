@@ -1,13 +1,6 @@
 package Algorithm;
 
-import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
+
 import java.util.HashMap;
 import java.util.LinkedList;
 
@@ -16,20 +9,18 @@ public class Rule {
     private String symbol = null;
     private LinkedList<String> parameterList = new LinkedList<>();
     private int noofParameters = 0;
-    private final String varSequence;
     private HashMap<String, Integer> localTables;
     private LinkedList<String> code;
     private String transitionSymbol = "";
     private NewSymbol newSymbol;
 
     public Rule(String varSequence, HashMap<String, Integer> varTable, NewSymbol newSymbol) {
-        this.varSequence = varSequence;
         localTables = (HashMap<String, Integer>) varTable.clone();
         this.newSymbol = newSymbol;
-        for (int i = 0; i < varSequence.length(); i+=2) {
+        /*for (int i = 0; i < varSequence.length(); i+=2) {
             parameterList.add(String.valueOf(varSequence.charAt(i)));
             noofParameters++;
-        }
+        }*/
     }
 
 
@@ -65,11 +56,13 @@ public class Rule {
     }
 
     public void addLocalVariable(String token) {
-        localTables.remove(token);
-        parameterList.remove(token);
-        noofParameters--;
+        //localTables.remove(token);
         parameterList.add(token);
         noofParameters++;
+    }
+
+    public void setLocalVariable(String variable, int value){
+        localTables.put(variable,value);
     }
 
     public void delLatestLocal() {
@@ -126,6 +119,10 @@ public class Rule {
 
     public HashMap<String, Integer> getLocalVariables() {
         return localTables;
+    }
+
+    public LinkedList<String> getParameters() {
+        return parameterList;
     }
 }
 
