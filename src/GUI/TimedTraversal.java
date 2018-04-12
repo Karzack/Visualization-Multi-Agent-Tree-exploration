@@ -61,9 +61,9 @@ public class TimedTraversal extends Thread {
 
             }
 
-            for (Map.Entry<String, Edge> edges : trad.getAllEdges().entrySet()) {
-                if (agentNetwork.getCurrentTree().containsValue(edges.getValue().getChild())) {
-                    g.addEdge(edges.getKey(), edges.getValue().getParent().getId(), edges.getValue().getChild().getId());
+            for (Edge edges : trad.getAllEdges()) {
+                if (agentNetwork.getCurrentTree().containsValue(edges.getChild())) {
+                    g.addEdge(edges.getId(), edges.getParent().getId(), edges.getChild().getId());
                 }
             }
 
@@ -78,7 +78,7 @@ public class TimedTraversal extends Thread {
             // Transformer maps the vertex number to a vertex property
             Transformer<Integer, Paint> vertexColorNodes = i -> {
                 if (i == 0) return Color.GREEN;
-                else if (!tempTree.containsValue(agentNetwork.getCurrentTree().get(i))) return Color.YELLOW;
+                //else if (!tempTree.containsValue(agentNetwork.getCurrentTree().get(i))) return Color.YELLOW;
                 else if (agentNetwork.getAllAgentLocations().contains(i)) return Color.CYAN;
                 return Color.RED;
             };

@@ -6,6 +6,7 @@ public class Node {
     private int id;
     private Edge toParent = null;
     private LinkedList<Edge> children = new LinkedList<>();
+    private String Name;
 
     public Node(int id){
         this.id=id;
@@ -32,5 +33,13 @@ public class Node {
 
     public int getId() {
         return id;
+    }
+
+    public String getName() {
+        return Name;
+    }
+
+    public void setName(String name) {
+        Name = name;
     }
 }

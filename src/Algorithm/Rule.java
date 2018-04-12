@@ -14,13 +14,9 @@ public class Rule {
     private String transitionSymbol = "";
     private NewSymbol newSymbol;
 
-    public Rule(String varSequence, HashMap<String, Integer> varTable, NewSymbol newSymbol) {
+    public Rule(HashMap<String, Integer> varTable, NewSymbol newSymbol) {
         localTables = (HashMap<String, Integer>) varTable.clone();
         this.newSymbol = newSymbol;
-        /*for (int i = 0; i < varSequence.length(); i+=2) {
-            parameterList.add(String.valueOf(varSequence.charAt(i)));
-            noofParameters++;
-        }*/
     }
 
 
@@ -56,13 +52,16 @@ public class Rule {
     }
 
     public void addLocalVariable(String token) {
-        //localTables.remove(token);
         parameterList.add(token);
         noofParameters++;
     }
 
     public void setLocalVariable(String variable, int value){
         localTables.put(variable,value);
+    }
+
+    public void returnLocalVariables(HashMap<String,Integer> original){
+        localTables = original;
     }
 
     public void delLatestLocal() {

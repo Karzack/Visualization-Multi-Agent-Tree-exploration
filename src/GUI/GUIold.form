@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="GUI.GUI">
+  <grid id="27dc6" binding="mainPanel" layout-manager="BorderLayout" hgap="0" vgap="0">
+    <constraints>
+      <xy x="20" y="20" width="1844" height="1028"/>
+    </constraints>
+    <properties>
+      <opaque value="true"/>
+      <preferredSize width="1500" height="1000"/>
+    </properties>
+    <border type="none"/>
+    <children>
+      <grid id="f0c39" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
+        <constraints border-constraint="East"/>
+        <properties>
+          <preferredSize width="200" height="0"/>
+        </properties>
+        <border type="line" title="Nodes">
+          <color color="-16777216"/>
+        </border>
+        <children>
+          <component id="ff0d7" class="javax.swing.JLabel">
+            <constraints/>
+            <properties>
+              <preferredSize width="60" height="16"/>
+              <text value="Nodes"/>
+              <verticalAlignment value="0"/>
+            </properties>
+          </component>
+          <component id="1adfc" class="javax.swing.JTextField" binding="nodes">
+            <constraints/>
+            <properties>
+              <preferredSize width="60" height="30"/>
+            </properties>
+          </component>
+          <component id="bae95" class="javax.swing.JButton" binding="drawBtn">
+            <constraints/>
+            <properties>
+              <label value="Draw"/>
+              <opaque value="false"/>
+              <preferredSize width="180" height="27"/>
+              <text value="Draw"/>
+            </properties>
+          </component>
+          <component id="b0fc6" class="javax.swing.JLabel">
+            <constraints/>
+            <properties>
+              <preferredSize width="60" height="16"/>
+              <text value="Agents"/>
+            </properties>
+          </component>
+          <component id="56b30" class="javax.swing.JTextField" binding="agents">
+            <constraints/>
+            <properties>
+              <preferredSize width="60" height="30"/>
+            </properties>
+          </component>
+          <component id="4ef84" class="javax.swing.JButton" binding="agentsBtn">
+            <constraints/>
+            <properties>
+              <label value="draw"/>
+              <preferredSize width="180" height="27"/>
+              <text value="draw"/>
+            </properties>
+          </component>
+          <component id="ce484" class="javax.swing.JButton" binding="traverseBtn">
+            <constraints/>
+            <properties>
+              <label value="Traverse"/>
+              <preferredSize width="180" height="27"/>
+              <text value="Traverse"/>
+            </properties>
+          </component>
+          <component id="9f198" class="javax.swing.JButton" binding="showRouteBtn">
+            <constraints/>
+            <properties>
+              <preferredSize width="120" height="27"/>
+              <selected value="false"/>
+              <text value="Show route"/>
+            </properties>
+          </component>
+          <component id="270ed" class="javax.swing.JTextField" binding="showRouteTxt">
+            <constraints/>
+            <properties>
+              <preferredSize width="60" height="30"/>
+            </properties>
+          </component>
+          <component id="77bfb" class="javax.swing.JLabel">
+            <constraints/>
+            <properties>
+              <preferredSize width="80" height="16"/>
+              <text value="Tidsintervall"/>
+            </properties>
+          </component>
+          <component id="417ca" class="javax.swing.JTextField" binding="txtTImeInterval">
+            <constraints/>
+            <properties>
+              <preferredSize width="60" height="30"/>
+            </properties>
+          </component>
+          <component id="67f0" class="javax.swing.JCheckBox" binding="timedTraversalCheckBox" default-binding="true">
+            <constraints/>
+            <properties>
+              <text value="Timed traversal"/>
+            </properties>
+          </component>
+          <component id="7aa13" class="javax.swing.JButton" binding="resetBtn">
+            <constraints/>
+            <properties>
+              <text value="Reset"/>
+            </properties>
+          </component>
+          <component id="3e4c5" class="javax.swing.JLabel" binding="agentTimeStepCounter">
+            <constraints/>
+            <properties>
+              <enabled value="false"/>
+              <text value="Step: "/>
+            </properties>
+          </component>
+          <component id="88f06" class="javax.swing.JLabel" binding="fastestAgent">
+            <constraints/>
+            <properties>
+              <text value="Fastest agent: "/>
+            </properties>
+          </component>
+          <component id="34f24" class="javax.swing.JLabel" binding="slowestAgent">
+            <constraints/>
+            <properties>
+              <text value="Slowest Agent: "/>
+            </properties>
+          </component>
+        </children>
+      </grid>
+      <tabbedpane id="d74fe" binding="mapsPane">
+        <constraints border-constraint="West"/>
+        <properties>
+          <opaque value="false"/>
+          <preferredSize width="950" height="0"/>
+        </properties>
+        <border type="none"/>
+        <children>
+          <grid id="1f75d" binding="maps" layout-manager="BorderLayout" hgap="0" vgap="0">
+            <constraints>
+              <tabbedpane title="Nodes map"/>
+            </constraints>
+            <properties>
+              <preferredSize width="600" height="0"/>
+            </properties>
+            <border type="line">
+              <color color="-16777216"/>
+            </border>
+            <children/>
+          </grid>
+          <grid id="52fe9" binding="agentsMap" layout-manager="BorderLayout" hgap="0" vgap="0">
+            <constraints>
+              <tabbedpane title="Agents map"/>
+            </constraints>
+            <properties>
+              <preferredSize width="1000" height="0"/>
+            </properties>
+            <border type="line"/>
+            <children/>
+          </grid>
+          <grid id="6a6d4" binding="agentRoutePane" layout-manager="BorderLayout" hgap="0" vgap="0">
+            <constraints>
+              <tabbedpane title="Agent route"/>
+            </constraints>
+            <properties/>
+            <border type="line"/>
+            <children/>
+          </grid>
+        </children>
+      </tabbedpane>
+    </children>
+  </grid>
+</form>

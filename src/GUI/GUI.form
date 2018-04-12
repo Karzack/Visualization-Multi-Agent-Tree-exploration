@@ -2,7 +2,7 @@
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="GUI.GUI">
   <grid id="27dc6" binding="mainPanel" layout-manager="BorderLayout" hgap="0" vgap="0">
     <constraints>
-      <xy x="20" y="20" width="1844" height="1028"/>
+      <xy x="20" y="20" width="1844" height="2366"/>
     </constraints>
     <properties>
       <opaque value="true"/>
@@ -10,123 +10,260 @@
     </properties>
     <border type="none"/>
     <children>
-      <grid id="f0c39" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
+      <grid id="f0c39" layout-manager="GridBagLayout">
         <constraints border-constraint="East"/>
         <properties>
-          <preferredSize width="200" height="0"/>
+          <alignmentX value="0.5"/>
+          <alignmentY value="0.5"/>
+          <preferredSize width="350" height="0"/>
         </properties>
         <border type="line" title="Nodes">
           <color color="-16777216"/>
         </border>
         <children>
-          <component id="ff0d7" class="javax.swing.JLabel">
-            <constraints/>
+          <component id="af9a3" class="javax.swing.JLabel">
+            <constraints>
+              <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.0" weighty="0.0"/>
+            </constraints>
             <properties>
-              <preferredSize width="60" height="16"/>
-              <text value="Nodes"/>
-              <verticalAlignment value="0"/>
+              <text value="Variables: "/>
             </properties>
           </component>
-          <component id="1adfc" class="javax.swing.JTextField" binding="nodes">
-            <constraints/>
+          <component id="73c41" class="javax.swing.JTextField" binding="txtVariables">
+            <constraints>
+              <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="150" height="-1"/>
+              </grid>
+              <gridbag weightx="0.0" weighty="0.0"/>
+            </constraints>
             <properties>
-              <preferredSize width="60" height="30"/>
+              <preferredSize width="120" height="24"/>
+              <text value="i,j,k,m,t"/>
             </properties>
           </component>
-          <component id="bae95" class="javax.swing.JButton" binding="drawBtn">
-            <constraints/>
+          <component id="40f22" class="javax.swing.JLabel">
+            <constraints>
+              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.0" weighty="0.0"/>
+            </constraints>
             <properties>
-              <label value="Draw"/>
-              <opaque value="false"/>
-              <preferredSize width="180" height="27"/>
-              <text value="Draw"/>
+              <text value="Root: "/>
             </properties>
           </component>
-          <component id="b0fc6" class="javax.swing.JLabel">
-            <constraints/>
+          <component id="892ab" class="javax.swing.JTextField" binding="txtRoot">
+            <constraints>
+              <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="150" height="-1"/>
+              </grid>
+              <gridbag weightx="0.0" weighty="0.0"/>
+            </constraints>
             <properties>
-              <preferredSize width="60" height="16"/>
-              <text value="Agents"/>
+              <text value="Root"/>
             </properties>
           </component>
-          <component id="56b30" class="javax.swing.JTextField" binding="agents">
-            <constraints/>
+          <component id="291a5" class="javax.swing.JButton" binding="btnCreateRules">
+            <constraints>
+              <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.0" weighty="0.0"/>
+            </constraints>
             <properties>
-              <preferredSize width="60" height="30"/>
+              <text value="Create Rules"/>
             </properties>
           </component>
-          <component id="4ef84" class="javax.swing.JButton" binding="agentsBtn">
-            <constraints/>
+          <component id="ab61c" class="javax.swing.JTextArea" binding="txtRulesAlgorithm">
+            <constraints>
+              <grid row="4" column="0" row-span="1" col-span="3" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                <preferred-size width="150" height="50"/>
+              </grid>
+              <gridbag weightx="0.0" weighty="0.0"/>
+            </constraints>
             <properties>
-              <label value="draw"/>
-              <preferredSize width="180" height="27"/>
-              <text value="draw"/>
+              <lineWrap value="true"/>
+              <preferredSize width="0" height="200"/>
+              <text value="Root-&gt;^i=1..k{X[t][floor(i/(log(i)+1))]};X[m][j]-&gt;?m&gt;0{X[m-1][j]}{B[j]};B[j]-&gt;?j&gt;0{^i=2..t{T}B[j-1]}{^i=1..t{T}};"/>
             </properties>
           </component>
-          <component id="ce484" class="javax.swing.JButton" binding="traverseBtn">
-            <constraints/>
+          <component id="cd139" class="javax.swing.JLabel" binding="lblRule">
+            <constraints>
+              <grid row="3" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.0" weighty="0.0"/>
+            </constraints>
             <properties>
-              <label value="Traverse"/>
-              <preferredSize width="180" height="27"/>
+              <text value="Write rule algorithms below: "/>
+            </properties>
+          </component>
+          <vspacer id="b5baf">
+            <constraints>
+              <grid row="7" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+              <gridbag top="15" left="0" bottom="0" right="0" weightx="0.0" weighty="0.0"/>
+            </constraints>
+          </vspacer>
+          <component id="11767" class="javax.swing.JLabel" binding="lblAgents">
+            <constraints>
+              <grid row="8" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.0" weighty="0.0"/>
+            </constraints>
+            <properties>
+              <text value="Agents: "/>
+            </properties>
+          </component>
+          <component id="e9d29" class="javax.swing.JTextField" binding="txtAgents">
+            <constraints>
+              <grid row="8" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="150" height="-1"/>
+              </grid>
+              <gridbag weightx="0.0" weighty="0.0"/>
+            </constraints>
+            <properties/>
+          </component>
+          <component id="3ccf8" class="javax.swing.JButton" binding="btnDrawAgents">
+            <constraints>
+              <grid row="9" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.0" weighty="0.0"/>
+            </constraints>
+            <properties>
+              <text value="Draw agents"/>
+            </properties>
+          </component>
+          <component id="d6156" class="javax.swing.JCheckBox" binding="timedSecCheckBox" default-binding="true">
+            <constraints>
+              <grid row="10" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.0" weighty="0.0"/>
+            </constraints>
+            <properties>
+              <text value="Timed (sec): "/>
+            </properties>
+          </component>
+          <component id="e9dff" class="javax.swing.JTextField" binding="txtTime">
+            <constraints>
+              <grid row="10" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="150" height="-1"/>
+              </grid>
+              <gridbag weightx="0.0" weighty="0.0"/>
+            </constraints>
+            <properties/>
+          </component>
+          <component id="874e9" class="javax.swing.JLabel">
+            <constraints>
+              <grid row="12" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.0" weighty="0.0"/>
+            </constraints>
+            <properties>
+              <text value="Show agent route: "/>
+            </properties>
+          </component>
+          <component id="e9090" class="javax.swing.JTextField" binding="showRouteTxt">
+            <constraints>
+              <grid row="12" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="150" height="-1"/>
+              </grid>
+              <gridbag weightx="0.0" weighty="0.0"/>
+            </constraints>
+            <properties/>
+          </component>
+          <component id="5dffa" class="javax.swing.JButton" binding="btnTraverse">
+            <constraints>
+              <grid row="11" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.0" weighty="0.0"/>
+            </constraints>
+            <properties>
               <text value="Traverse"/>
             </properties>
           </component>
-          <component id="9f198" class="javax.swing.JButton" binding="showRouteBtn">
-            <constraints/>
+          <component id="7cd63" class="javax.swing.JButton" binding="btnShowRoute">
+            <constraints>
+              <grid row="13" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.0" weighty="0.0"/>
+            </constraints>
             <properties>
-              <preferredSize width="120" height="27"/>
-              <selected value="false"/>
-              <text value="Show route"/>
+              <text value="Show Route"/>
             </properties>
           </component>
-          <component id="270ed" class="javax.swing.JTextField" binding="showRouteTxt">
-            <constraints/>
-            <properties>
-              <preferredSize width="60" height="30"/>
-            </properties>
-          </component>
-          <component id="77bfb" class="javax.swing.JLabel">
-            <constraints/>
-            <properties>
-              <preferredSize width="80" height="16"/>
-              <text value="Tidsintervall"/>
-            </properties>
-          </component>
-          <component id="417ca" class="javax.swing.JTextField" binding="txtTImeInterval">
-            <constraints/>
-            <properties>
-              <preferredSize width="60" height="30"/>
-            </properties>
-          </component>
-          <component id="67f0" class="javax.swing.JCheckBox" binding="timedTraversalCheckBox" default-binding="true">
-            <constraints/>
-            <properties>
-              <text value="Timed traversal"/>
-            </properties>
-          </component>
-          <component id="7aa13" class="javax.swing.JButton" binding="resetBtn">
-            <constraints/>
+          <component id="b1949" class="javax.swing.JButton" binding="resetButton" default-binding="true">
+            <constraints>
+              <grid row="14" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.0" weighty="0.0"/>
+            </constraints>
             <properties>
               <text value="Reset"/>
             </properties>
           </component>
-          <component id="3e4c5" class="javax.swing.JLabel" binding="agentTimeStepCounter">
-            <constraints/>
+          <component id="8d378" class="javax.swing.JButton" binding="btnCompile">
+            <constraints>
+              <grid row="5" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.0" weighty="0.0"/>
+            </constraints>
             <properties>
               <enabled value="false"/>
-              <text value="Step: "/>
+              <text value="Compile Rules"/>
             </properties>
           </component>
-          <component id="88f06" class="javax.swing.JLabel" binding="fastestAgent">
-            <constraints/>
+          <component id="97dbc" class="javax.swing.JButton" binding="btnInstance">
+            <constraints>
+              <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.0" weighty="0.0"/>
+            </constraints>
             <properties>
-              <text value="Fastest agent: "/>
+              <enabled value="false"/>
+              <text value="Instance"/>
             </properties>
           </component>
-          <component id="34f24" class="javax.swing.JLabel" binding="slowestAgent">
-            <constraints/>
+          <component id="5c5c9" class="javax.swing.JButton" binding="btnDrawNodes">
+            <constraints>
+              <grid row="6" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.0" weighty="0.0"/>
+            </constraints>
             <properties>
-              <text value="Slowest Agent: "/>
+              <enabled value="false"/>
+              <text value="Draw Nodes"/>
+            </properties>
+          </component>
+          <component id="e4624" class="javax.swing.JLabel" binding="fastestAgent">
+            <constraints>
+              <grid row="16" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.0" weighty="0.0"/>
+            </constraints>
+            <properties>
+              <text value="Label"/>
+            </properties>
+          </component>
+          <component id="8400e" class="javax.swing.JLabel" binding="agentTimeStepCounter">
+            <constraints>
+              <grid row="15" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.0" weighty="0.0"/>
+            </constraints>
+            <properties>
+              <text value="Label"/>
+            </properties>
+          </component>
+          <component id="aae62" class="javax.swing.JLabel" binding="slowestAgent">
+            <constraints>
+              <grid row="17" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.0" weighty="0.0"/>
+            </constraints>
+            <properties>
+              <text value="Label"/>
+            </properties>
+          </component>
+          <component id="c2c9a" class="javax.swing.JCheckBox" binding="checkBoxSimpleDraw">
+            <constraints>
+              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.0" weighty="0.0"/>
+            </constraints>
+            <properties>
+              <text value="Simple Tree drawing: "/>
+            </properties>
+          </component>
+          <component id="49358" class="javax.swing.JTextField" binding="txtSimpleDraw">
+            <constraints>
+              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="150" height="-1"/>
+              </grid>
+              <gridbag weightx="0.0" weighty="0.0"/>
+            </constraints>
+            <properties>
+              <toolTipText value="The amount of nodes to be drawn in the tree."/>
             </properties>
           </component>
         </children>
@@ -135,7 +272,7 @@
         <constraints border-constraint="West"/>
         <properties>
           <opaque value="false"/>
-          <preferredSize width="950" height="0"/>
+          <preferredSize width="850" height="0"/>
         </properties>
         <border type="none"/>
         <children>
