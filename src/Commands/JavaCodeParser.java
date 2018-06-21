@@ -2,14 +2,11 @@ package Commands;
 
 
 public final class JavaCodeParser {
-    private static StringBuilder expression;
-    private static String variables = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM";
-    private static int locator;
-
 
     public static String parseCoder(String exp) {
-        expression = new StringBuilder(exp);
-        locator = expression.length() - 1;
+        StringBuilder expression = new StringBuilder(exp);
+        int locator = expression.length() - 1;
+        String variables = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM";
         boolean forceInt= false;
         while (locator >=0 ) {
             if (variables.contains(String.valueOf(expression.charAt(locator)))) {

@@ -1,4 +1,4 @@
-package Algorithm;
+package Rule;
 
 
 import GUI.GUI;
@@ -17,10 +17,11 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.*;
 
-public class AlgorithmParser {
-    private String valid = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM";
-    private GUI gui;
+public class RuleParser {
+    private final String valid = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM";
+    private final GUI gui;
     private String varSequence;
+    private String treeName;
     private Scanner scanner;
 
 
@@ -34,43 +35,43 @@ public class AlgorithmParser {
     private File root;
     private File sourceFile;
     private int nextNode = 0;
-    private String code = "package Commands;\n" +
-            "import static java.lang.Math.*; \n" +
-            "import java.util.HashMap; \n" +
-            "public class ActionList{" + " \n ";
-    Class<?> actionList;
-    Object instance;
+    private String code;
+    private Class<?> actionList;
+    private Object instance;
     private boolean errors = false;
 
 
-    public AlgorithmParser(GUI gui, String varSequence, String rules){
+    public RuleParser(GUI gui, String treeName, String rules){
         this.gui = gui;
-        this.varSequence = varSequence;
+        this.treeName = treeName;
+        code = "package Commands;\n" +
+                "import static java.lang.Math.*; \n" +
+                "import java.util.HashMap; \n" +
+                "public class "+ treeName +"ActionList{" + " \n ";
         scanner = new Scanner(rules);
     }
 
-    public void fillVarTable(LinkedList<Integer> list){
-        int index = 0;
-        for (int i = 0; i < list.size(); i++) {
-            varTable.put(String.valueOf(varSequence.charAt(index)),list.get(i));
-            index+=2;
+    public void fillVarTable(String variables,String variableValues){
+        String[] variableList = variables.split(",");
+        String[] valuesList = variableValues.split(",");
+        for (int i=0;i<variableList.length;i++) {
+            varTable.put(variableList[i], Integer.parseInt(valuesList[i]));
         }
     }
 
-    public HashMap parse() {
+    public HashMap<String, Rule> parse() {
         root = new File("src/Commands");
-        sourceFile = new File(root, "/ActionList.java");
+        sourceFile = new File(root, "/"+ treeName+"ActionList.java");
         sourceFile.getParentFile().mkdirs();
         scanner.useDelimiter(";");
         ruleSeq();
         return ruleTable;
-        //TODO: Rensa upp allt efter ruleSeq()
     }
 
     /**
      * Scanner and creator of rules
      */
-    public void ruleSeq() {
+    private void ruleSeq() {
         if (scanner.hasNext()) {
             currentScan = new StringBuilder(scanner.next());
 
@@ -94,15 +95,13 @@ public class AlgorithmParser {
 
         if (currentScan.indexOf("->")==0) {
             currentScan.delete(0,2);
-            LinkedList<String> termlist = null;
+            LinkedList<String> termList = null;
             try {
-                termlist = termExpSeq(rule);
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (ClassNotFoundException e) {
+                termList = termExpSeq(rule);
+            } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
             }
-            rule.setCode(termlist);
+            rule.setCode(termList);
         }
         return rule;
     }
@@ -114,9 +113,9 @@ public class AlgorithmParser {
      * @param rule the rule being written
      */
     private void leftSide(Rule rule) {
-        String sym = "";
+        StringBuilder sym = new StringBuilder();
         while (valid.contains(String.valueOf(currentScan.charAt(0)))) {
-            sym += String.valueOf(currentScan.charAt(0));
+            sym.append(String.valueOf(currentScan.charAt(0)));
             currentScan.deleteCharAt(0);
         }
         if(sym.length()>0) {
@@ -126,18 +125,18 @@ public class AlgorithmParser {
                 rule.setNoofParameters(0);
                 localSeq(rule);
             } else if (currentScan.indexOf("->")!=0) {
-                //error LeftSide error
+                JOptionPane.showMessageDialog(null, "Leftside Error");
             }
-            if (ruleTable.containsKey(sym)) {
+            if (ruleTable.containsKey(sym.toString())) {
                 errors = true;
-                System.out.println("Symbol already exists");
+                JOptionPane.showMessageDialog(null,"Symbol already exists");
             } else {
-                rule.setTransitionSymbol(sym);
+                rule.setTransitionSymbol(sym.toString());
             }
         }
         else{
             errors = true;
-            System.out.println("error, not valid symbol (not in table)");
+            JOptionPane.showMessageDialog(null,"Error, not valid symbol (not in table)");
         }
     }
 
@@ -155,12 +154,12 @@ public class AlgorithmParser {
             }
             else if(currentScan.indexOf("->")!=0){
                 errors = true;
-                System.out.println("LocalSeq error");
+                JOptionPane.showMessageDialog(null,"LocalSeq error");
             }
         }
         else{
             errors = true;
-            System.out.println("localSeq error, exptecting ']'");
+            JOptionPane.showMessageDialog(null,"localSeq error, expecting ']'");
         }
     }
 
@@ -179,7 +178,7 @@ public class AlgorithmParser {
         }
         else{
             errors = true;
-            System.out.println("error, localVar variable error, not in table: " + token);
+            JOptionPane.showMessageDialog(null,"error, localVar variable error, not in table: " + token);
         }
     }
 
@@ -214,7 +213,7 @@ public class AlgorithmParser {
             return symExp(rule);
         }
         errors = true;
-        System.out.println("TermExp error, Invalid expression");
+        JOptionPane.showMessageDialog(null,"TermExp error, Invalid expression");
         return null;
     }
 
@@ -234,7 +233,7 @@ public class AlgorithmParser {
                     returner.addAll(exp1);
                     if (currentScan.indexOf("..") == 0) {
                         currentScan.delete(0, 2);
-                        LinkedList exp2 = innerExp("{", rule);
+                        LinkedList<String> exp2 = innerExp("{", rule);
                         returner.addAll(exp2);
                         if (currentScan.indexOf("{") == 0) {
                             currentScan.deleteCharAt(0);
@@ -242,7 +241,7 @@ public class AlgorithmParser {
                             returner.addAll(repetition);
                             if (currentScan.indexOf("}") != 0) {
                                 errors = true;
-                                System.out.println("Error: Loop error 1");
+                                JOptionPane.showMessageDialog(null,"Error: Loop error 1");
                             } else {
                                 currentScan.deleteCharAt(0);
                                 rule.delLatestLocal();
@@ -256,7 +255,7 @@ public class AlgorithmParser {
             return returner;
         }else{
             errors = true;
-            System.out.println("Error: Expected \"^\" ");
+            JOptionPane.showMessageDialog(null,"Error: Expected \"^\" ");
             return null;
         }
     }
@@ -266,7 +265,7 @@ public class AlgorithmParser {
         if(currentScan.indexOf("?")==0) {
             currentScan.deleteCharAt(0);
             returner.add("?");
-            LinkedList bexp = boolExp(rule);
+            LinkedList<String> bexp = boolExp(rule);
             returner.addAll(bexp);
             if (currentScan.indexOf("{") == 0) {
                 currentScan.deleteCharAt(0);
@@ -274,24 +273,24 @@ public class AlgorithmParser {
                 returner.addAll(ifSelection);
                 if (currentScan.charAt(0)!='}') {
                     errors = true;
-                    System.out.println("error queryError 1: ");
+                    JOptionPane.showMessageDialog(null,"error queryError 1: ");
                 }
                 else{
                     currentScan.deleteCharAt(0);
                 }
             } else {
                 errors = true;
-                System.out.println("queryExp error");
+                JOptionPane.showMessageDialog(null,"queryExp error");
             }
             if (currentScan.indexOf("{") == 0) {
                 currentScan.deleteCharAt(0);
-                LinkedList elSelection = termExpSeq(rule);
+                LinkedList<String> elSelection = termExpSeq(rule);
                 returner.add("else");
                 returner.addAll(elSelection);
                 String token = String.valueOf(currentScan.charAt(0));
                 if (!token.equals("}")) {
                     errors = true;
-                    System.out.println("error queryError 2: " + token);
+                    JOptionPane.showMessageDialog(null,"error queryError 2: " + token);
                 }
             }
         }
@@ -305,7 +304,7 @@ public class AlgorithmParser {
         returner.add("S");
         returner.add(token);
         if(valid.contains(token)){
-            LinkedList<String> actualList = new LinkedList();
+            LinkedList<String> actualList = new LinkedList<>();
             if(currentScan.indexOf("}")!=-1 && currentScan.indexOf("}")!=0){
                 actualList = innerExpSeq(rule);
             }
@@ -319,7 +318,7 @@ public class AlgorithmParser {
         LinkedList<String> returner = new LinkedList<>();
         if(currentScan.indexOf("[")==0){
             currentScan.deleteCharAt(0);
-            LinkedList expCode = innerExp("]", rule);
+            LinkedList<String> expCode = innerExp("]", rule);
             currentScan.deleteCharAt(0);
             returner.addAll(expCode);
             if(currentScan.indexOf("[")==0){
@@ -337,25 +336,25 @@ public class AlgorithmParser {
     }
 
     private LinkedList<String> innerExp(String follow, Rule rule) {
-        String exp = "";
+        StringBuilder exp = new StringBuilder();
         while (currentScan.indexOf(follow)!=0){
-            exp += currentScan.charAt(0);
+            exp.append(currentScan.charAt(0));
             currentScan.deleteCharAt(0);
         }
 
-        LinkedList<String> returner = rule.makeExpressionEvaluator(exp);
+        LinkedList<String> returner = rule.makeExpressionEvaluator(exp.toString());
         code += returner.get(1);
         returner.remove(1);
         return returner;
     }
 
     private LinkedList<String> boolExp(Rule rule) {
-        String exp = "";
+        StringBuilder exp = new StringBuilder();
         while (currentScan.indexOf("{")!=0){
-            exp += currentScan.charAt(0);
+            exp.append(currentScan.charAt(0));
             currentScan.deleteCharAt(0);
         }
-        LinkedList<String> returner = rule.makeBooleanEvaluator(exp);
+        LinkedList<String> returner = rule.makeBooleanEvaluator(exp.toString());
         code += returner.get(1);
         returner.remove(1);
         return returner;
@@ -366,42 +365,38 @@ public class AlgorithmParser {
         return errors;
     }
 
-    public String compileActionList(){
+    public void compileActionList(){
 
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-        int result = compiler.run(null,null,null,sourceFile.getPath());
+        compiler.run(null, null, null, sourceFile.getPath());
 
-        return null;
     }
 
-    public String instanciateActionList() throws ClassNotFoundException, MalformedURLException {
+    public void instanciateActionList(String treeName) throws ClassNotFoundException, MalformedURLException {
         URLClassLoader classLoader = URLClassLoader.newInstance(new URL[] { root.toURI().toURL() });
-        actionList = Class.forName("Commands.ActionList", true, classLoader);
+        actionList = Class.forName("Commands."+treeName+"ActionList", true, classLoader);
         try {
             instance = actionList.newInstance();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
+        } catch (InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }
 
-        return null;
     }
 
     public void executeRule(Rule rule, String parent,LinkedList<Integer> parameters) {
         System.out.println("executing rule: " + rule.getTransitionSymbol()+rule.getParameters());
-        String node = rule.getTransitionSymbol();
+        StringBuilder node = new StringBuilder(rule.getTransitionSymbol());
         LinkedList<String> executor = rule.getCode();
         if(parameters!=null){
             int indexer = 0;
             for (int parameter : parameters) {
                 rule.setLocalVariable(rule.getParameters().get(indexer),parameter);
-                node+=parameter;
+                node.append(parameter);
                 indexer++;
             }
-            executor.add(0,node);
+            executor.add(0, node.toString());
         }else{
-            executor.add(0,node);
+            executor.add(0, node.toString());
         }
         if (parent != null){
             gui.addNodeToTree(executor.get(0),nextNode, parent);
@@ -439,18 +434,12 @@ public class AlgorithmParser {
         System.out.println("Exiting rule: " + rule.getTransitionSymbol() + rule.getParameters());
     }
 
-    public int executeExpression(int symbol, HashMap<String,Integer> variables){
+    private int executeExpression(int symbol, HashMap<String,Integer> variables){
         try {
             instance = actionList.newInstance();
             Method method = actionList.getDeclaredMethod("activate"+symbol,HashMap.class);
             return (int) method.invoke(instance,variables);
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        }catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        } catch (InstantiationException e) {
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
             e.printStackTrace();
         }
         return 0;
@@ -461,13 +450,7 @@ public class AlgorithmParser {
             instance = actionList.newInstance();
             Method method = actionList.getDeclaredMethod("activate"+symbol,HashMap.class);
             return (boolean) method.invoke(instance,variables);
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        }catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        } catch (InstantiationException e) {
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
             e.printStackTrace();
         }
         return false;
@@ -521,7 +504,7 @@ public class AlgorithmParser {
                 parameters.add(executeExpression(Integer.parseInt(executor.get(i)), rule.getLocalVariables()));
             }
 
-            System.out.println("execute symbol: " + executor.get(index).toString() + "," +parameters.toString() + " size: " + parameters.size());
+            System.out.println("execute symbol: " + executor.get(index) + "," +parameters.toString() + " size: " + parameters.size());
         }
         if(ruleTable.get(executor.get(index))!=null) {
             String next = executor.get(0);
@@ -545,13 +528,15 @@ public class AlgorithmParser {
         int top = executeExpression(Integer.parseInt(executor.get(index+3)),rule.getLocalVariables());
         index += 4;
         int outdex = 0;
-        for (iterator = rule.getLocalVariables().put("i",executeExpression(Integer.parseInt(executor.get(index - 2)),rule.getLocalVariables())); iterator <= top; iterator++) {
+        for (iterator = rule.getLocalVariables().put("i",executeExpression(Integer.parseInt(executor.get(index - 2)),rule.getLocalVariables()));
+             iterator < top; iterator++) {
             if(executor.get(0).equals("^")){
                 executor.add(0,rule.getTransitionSymbol());
             }
             switch (executor.get(index)){
                 case "^":
                     outdex = executeLoop(index,executor,rule);
+                    top = executeExpression(Integer.parseInt(executor.get(index-1)),rule.getLocalVariables());
                     break;
                 case "?":
                     outdex = executeQuery(index,executor,rule);

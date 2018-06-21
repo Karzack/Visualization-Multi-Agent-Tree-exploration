@@ -6,7 +6,6 @@ import Tree.Node;
 import Tree.Trad;
 import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.algorithms.layout.RadialTreeLayout;
-import edu.uci.ics.jung.algorithms.layout.TreeLayout;
 import edu.uci.ics.jung.graph.DelegateForest;
 import edu.uci.ics.jung.graph.Forest;
 import edu.uci.ics.jung.graph.Graph;
@@ -21,9 +20,8 @@ import java.awt.geom.Ellipse2D;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TimedTraversal extends Thread {
+class TimedTraversal extends Thread {
     private AgentNetwork agentNetwork;
-    private VisualizationViewer vv3;
     private Trad trad;
     private JTabbedPane mapsPane;
     private JPanel agentsMap;
@@ -32,9 +30,11 @@ public class TimedTraversal extends Thread {
     private JLabel slowestAgent;
     private JLabel agentTimeStepCounter;
     private int agentTimeStepCounterNumber;
+    private boolean showNodes;
+    private boolean continueWhile=true;
 
 
-    public TimedTraversal(Trad trad, AgentNetwork agentNetwork, JTabbedPane mapsPane, JPanel agentsMap, int time, JLabel fastestAgent, JLabel slowestAgent, JLabel agentTimeStepCounter, int agentTimeStepCounterNumber) {
+    public TimedTraversal(Trad trad, AgentNetwork agentNetwork, JTabbedPane mapsPane, JPanel agentsMap, int time, JLabel fastestAgent, JLabel slowestAgent, JLabel agentTimeStepCounter, int agentTimeStepCounterNumber, boolean showNodes) {
         this.trad = trad;
         this.agentNetwork = agentNetwork;
         this.mapsPane = mapsPane;
@@ -45,55 +45,54 @@ public class TimedTraversal extends Thread {
         this.slowestAgent = slowestAgent;
         this.agentTimeStepCounter = agentTimeStepCounter;
         this.agentTimeStepCounterNumber = agentTimeStepCounterNumber;
+        this.showNodes = showNodes;
     }
 
     @Override
     public void run() {
+        continueWhile=true;
         do {
-            HashMap<Integer, Node> tempTree = (HashMap<Integer, Node>) agentNetwork.getCurrentTree().clone();
             agentNetwork.traverseExecute();
-            Graph<Integer, String> g = new DelegateForest<>();
+            Graph<String, String> g = new DelegateForest<>();
             mapsPane.setSelectedIndex(1);
 
             for (Map.Entry<Integer, Node> nodes : agentNetwork.getCurrentTree().entrySet()) {
 
-                g.addVertex(nodes.getValue().getId());
+                g.addVertex(nodes.getValue().getName());
 
             }
 
             for (Edge edges : trad.getAllEdges()) {
                 if (agentNetwork.getCurrentTree().containsValue(edges.getChild())) {
-                    g.addEdge(edges.getId(), edges.getParent().getId(), edges.getChild().getId());
+                    g.addEdge(edges.getId(), edges.getParent().getName(), edges.getChild().getName());
                 }
             }
 
-            Layout<Integer, String> layout3 = new RadialTreeLayout<>((Forest<Integer, String>) g);
-            vv3 = new VisualizationViewer<>(layout3);
+            Layout<String, String> layout3 = new RadialTreeLayout<>((Forest<String, String>) g);
+            VisualizationViewer vv3 = new VisualizationViewer<>(layout3);
 
             final DefaultModalGraphMouse<String, Number> graphMouse3 = new DefaultModalGraphMouse<>();
             vv3.setGraphMouse(graphMouse3);
             graphMouse3.setMode(ModalGraphMouse.Mode.PICKING);
 
-            Transformer<Integer, String> transformer = String::valueOf;
+            Transformer<String, String> transformer = String::valueOf;
             // Transformer maps the vertex number to a vertex property
-            Transformer<Integer, Paint> vertexColorNodes = i -> {
-                if (i == 0) return Color.GREEN;
-                //else if (!tempTree.containsValue(agentNetwork.getCurrentTree().get(i))) return Color.YELLOW;
-                else if (agentNetwork.getAllAgentLocations().contains(i)) return Color.CYAN;
+            Transformer<String, Paint> vertexColorNodes = i -> {
+                if (agentNetwork.getAllAgentLocations().get(i)>0) return Color.CYAN;
+                else if (i.equals(agentNetwork.getRoot().getName())) return Color.GREEN;
                 return Color.RED;
             };
 
             Transformer<String, Paint> edgesColorEdges = i -> {
-                if (i == "") return Color.YELLOW;
+                if (i.equals("")) return Color.YELLOW;
                 return Color.RED;
             };
 
-            Transformer<Integer, Shape> vertexSize1 = i -> {
-                Ellipse2D circle = new Ellipse2D.Double(-4, -4, 8, 8);
-                return circle;
-            };
+            Transformer<String, Shape> vertexSize1 = i -> (Ellipse2D) new Ellipse2D.Double(-4, -4, 8, 8);
 
-            vv3.getRenderContext().setVertexLabelTransformer(transformer);
+            if(showNodes) {
+                vv3.getRenderContext().setVertexLabelTransformer(transformer);
+            }
             vv3.getRenderContext().setVertexShapeTransformer(vertexSize1);
             //vv3.getRenderer().getVertexLabelRenderer().setPosition(Renderer.VertexLabel.Position.CNTR);
             vv3.getRenderContext().setVertexFillPaintTransformer(vertexColorNodes);
@@ -109,10 +108,18 @@ public class TimedTraversal extends Thread {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-        }while (!agentNetwork.checkIfComplete() && !agentNetwork.checkIfAllAgentsInRoot());
-        int[] fast =  agentNetwork.lookForFastestAgent();
-        int[] slow = agentNetwork.lookForSlowestAgent();
-        fastestAgent.setText("Fastest Agent: " + fast[0] + " time: " + fast[1]);
-        slowestAgent.setText("Slowest Agent" + slow[0] + " time: " + slow[1]);
+            if(agentNetwork.checkIfAllAgentsInRoot() && agentNetwork.checkIfComplete()){
+                continueWhile=false;
+                String[] fast =  agentNetwork.lookForFastestAgent();
+                String[] slow = agentNetwork.lookForSlowestAgent();
+                fastestAgent.setText("Fastest Agent: " + fast[0] + " time: " + fast[1]);
+                slowestAgent.setText("Slowest Agent: " + slow[0] + " time: " + slow[1]);
+            }
+        }while (continueWhile);
+
+    }
+
+    public void stopWriting(){
+        continueWhile=false;
     }
 }
