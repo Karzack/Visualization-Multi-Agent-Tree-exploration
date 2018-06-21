@@ -1,6 +1,6 @@
-package Algorithm;
+package Rule;
 
-public class NewSymbol {
+class NewSymbol {
     private int newSymbol = 0;
     public String getNewSymbol() {
         newSymbol++;

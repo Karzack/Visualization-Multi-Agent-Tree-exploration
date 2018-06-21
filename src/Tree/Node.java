@@ -27,7 +27,7 @@ public class Node {
         return toParent;
     }
 
-    public void setToParent(Edge toParent) {
+    private void setToParent(Edge toParent) {
         this.toParent = toParent;
     }
 

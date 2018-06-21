@@ -1,0 +1,2 @@
+Test
+Root->^i=1..k{X[t][floor(i/(log(i)+1))]};B[j]->?j>0{^i=2..t{T}B[j-1]}{^i=1..t{T}};X[m][j]->?m>0{X[m-1][j]}{B[j]};

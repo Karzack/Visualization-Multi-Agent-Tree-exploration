@@ -1,4 +1,4 @@
-package Algorithm;
+package Rule;
 
 
 import java.util.HashMap;
@@ -6,7 +6,6 @@ import java.util.LinkedList;
 
 
 public class Rule {
-    private String symbol = null;
     private LinkedList<String> parameterList = new LinkedList<>();
     private int noofParameters = 0;
     private HashMap<String, Integer> localTables;
@@ -37,11 +36,6 @@ public class Rule {
         localTables.putAll(objects);
     }
 
-    public void popVarTable(){
-        if(localTables.size()>0){
-            localTables.clear();
-        }
-    }
 
     public void setNoofParameters(int noofParameters) {
         this.noofParameters = noofParameters;
@@ -80,9 +74,9 @@ public class Rule {
 
     @Override
     public String toString(){
-        String string = "";
-        for (int i = 0; i < parameterList.size(); i++) {
-            string += parameterList.get(i) +",";
+        StringBuilder string = new StringBuilder();
+        for (String aParameterList : parameterList) {
+            string.append(aParameterList).append(",");
         }
         return "" + transitionSymbol + "[" + string + "]{" + /*code.toString()*/ "}";
 

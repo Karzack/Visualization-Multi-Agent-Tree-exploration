@@ -1,38 +1,45 @@
 package AgentNetwork;
 
+import Tree.Edge;
 import Tree.Node;
 import Tree.Trad;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
 public class AgentNetwork {
     private LinkedList<Agent> allAgents = new LinkedList<>();
+    private ArrayList<String> agentTypes = new ArrayList<>();
     private HashMap<Integer, Node> currentTree = new HashMap<>();
-    private LinkedList<Integer> containsAgents = new LinkedList<>();
+    private HashMap<String,Integer> containsAgents = new HashMap<>();
     private Trad trad;
     private int timestep = 0;
+    File root = new File("src/AgentsList");
 
 
 
     public AgentNetwork(Trad trad){
         this.trad = trad;
-    }
-
-    public AgentNetwork(Trad trad, int numberOfAgents){
-        this.trad = trad;
-        createAgents(numberOfAgents);
         currentTree.put(trad.getRoot().getId(), trad.getRoot());
-    }
-
-    private void createAgents(int numberOfAgents) {
-        for (int i = 0; i < numberOfAgents; i++) {
-            allAgents.add(new Agent(trad.getRoot(), i, this));
+        for(Map.Entry<Integer, Node> nodes : trad.getAllNodes().entrySet()){
+            containsAgents.put(nodes.getValue().getName(),0);
         }
     }
 
-    public LinkedList<Integer> getAllAgentLocations(){
+    public void createAgent( Agent agent) {
+        allAgents.add(agent);
+        if(containsAgents.get(trad.getRoot().getName())!=null) {
+            int update = containsAgents.get(trad.getRoot().getName());
+            containsAgents.put(trad.getRoot().getName(),update+1);
+        }else {
+            containsAgents.put(trad.getRoot().getName(), 1);
+        }
+    }
+
+    public HashMap<String,Integer> getAllAgentLocations(){
         return containsAgents;
     }
 
@@ -43,25 +50,28 @@ public class AgentNetwork {
     public void traverseExecute(){
         timestep++;
         allAgents.forEach(agent -> {
-            TraverseActionEnum actionEnum = DeterminePath.determinePathCalculation(currentTree,agent);
-            //TraverseActionEnum actionEnum = DeterminePath.determineByRandom();
-            agent.traverse(actionEnum);
+            containsAgents.put(agent.getCurrentNode().getName(),containsAgents.get(agent.getCurrentNode().getName())-1);
+            agent.determinePath();
+            containsAgents.put(agent.getCurrentNode().getName(), containsAgents.get(agent.getCurrentNode().getName()) + 1);
         });
-        updateAgentLocation();
-    }
-
-    public HashMap<Integer, Node> getCurrentTree() {
-        return currentTree;
     }
 
     public boolean checkExploration(Tree.Edge currentNode){
         return currentTree.containsValue(currentNode.getChild());
     }
 
-    public String requestLog(Agent agent){
+    private String requestLog(Agent agent){
         return agent.sendLog();
     }
 
+    public int getAmountOfAgentsInNode(Node node){
+
+        return containsAgents.get(node.getName());
+    }
+
+    public HashMap<Integer, Node> getCurrentTree() {
+        return currentTree;
+    }
     public int getTreeSize(){
         return currentTree.size();
     }
@@ -80,74 +90,88 @@ public class AgentNetwork {
         currentTree.put(currentNode.getId(),currentNode);
     }
 
-    public void updateAgentLocation(){
-        containsAgents.clear();
-        for (Agent agent: allAgents){
-            if(!containsAgents.contains(agent.getCurrentNode().getId())) {
-                containsAgents.add(agent.getCurrentNode().getId());
+    public boolean checkIfExplored(Node node){
+        boolean explored = false;
+        for (Edge edge: node.getChildren()) {
+            if(currentTree.containsValue(edge.getChild())){
+                explored=true;
             }
         }
+        return !explored;
     }
 
     public boolean checkIfComplete(){
-        if(currentTree.size()==trad.getTreeSize()){
-            return true;
-        }
-        else{
-            return false;
-        }
+        return currentTree.size() == trad.getTreeSize();
     }
 
-    public int[] lookForFastestAgent(){
+    public String[] lookForFastestAgent(){
         Agent fastestAgent = null;
         int fastStep = Integer.MAX_VALUE;
         for(Agent fastAgent : allAgents){
             String[] time = fastAgent.sendLog().split(",");
             int stepper = 1;
             for(int i = 1;i<time.length;i++){
-                if(time[i].equals(time[i-1]) && time[i].equals("0")){
-                    stepper--;
-                }
-                else{
                     stepper++;
-                }
             }
             if( stepper < fastStep){
                 fastestAgent = fastAgent;
-                fastStep = stepper;
+                fastStep = stepper -1;
             }
         }
-        int[] returner = {fastestAgent.getId(),fastStep};
-        return returner;
+        return new String[]{fastestAgent.getId(),""+fastStep};
     }
 
-    public int[] lookForSlowestAgent(){
+    public String[] lookForSlowestAgent(){
         Agent slowestAgent = null;
         int slowStep = 0;
         for(Agent slowAgent : allAgents){
             String[] time = slowAgent.sendLog().split(",");
             int stepper = 1;
             for(int i = 1;i<time.length;i++){
-                if(time[i].equals(time[i-1]) && time[i].equals("0")){
-                    stepper--;
-                }else{
                     stepper++;
-                }
             }
             if( stepper > slowStep){
                 slowestAgent = slowAgent;
-                slowStep = stepper;
+                slowStep = stepper-1;
             }
         }
-        int[] returner = {slowestAgent.getId(),slowStep};
-        return returner;
+        return new String[]{slowestAgent.getId(),""+slowStep};
     }
 
     public boolean checkIfAllAgentsInRoot() {
-        if(containsAgents.size()==1 && containsAgents.getFirst()==0){
-            return true;
+        return containsAgents.get(getRoot().getName()).equals(allAgents.size());
+    }
+
+    public Node getRoot() {
+        return trad.getRoot();
+    }
+
+    public Agent getAgent(String id) {
+        for (Agent agent: allAgents) {
+            if(agent.getId().equals(id)){
+                return agent;
+            }
         }
-        return false;
+        return null;
+    }
+
+    public ArrayList<String> getAgentTypes() {
+        return agentTypes;
+    }
+
+    public void addAgentType(String type){
+        agentTypes.add(type);
+    }
+
+    public void removeAllAgentsOfType(String text) {
+        int amount = 0;
+        for(int i = allAgents.size()-1; i>=0;i--){
+            if (allAgents.get(i).getId().charAt(0)==text.charAt(0)){
+                allAgents.remove(i);
+                amount++;
+            }
+        }
+        containsAgents.put(trad.getRoot().getName(),containsAgents.get(trad.getRoot().getName())-amount);
     }
 }
 

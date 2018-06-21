@@ -3,27 +3,25 @@ package AgentNetwork;
 import Tree.Edge;
 import Tree.Node;
 
-import java.util.Random;
 
 
-public class Agent {
-    private int id;
-    private String log = "0";
-    private Node currentNode;
-    private AgentNetwork network;
-    private int numberOfAgentsHere=0;
+public abstract class Agent {
+    public String id;
+    protected String log;
+    protected Node currentNode;
+    public AgentNetwork network;
 
 
-    public Agent(Node root, int id, AgentNetwork network){
-        this.id=id;
-        currentNode=root;
-        this.network = network;
-    }
-    public Agent(){
+
+    protected Agent(){
 
     }
 
-    public int getId() {
+    public AgentNetwork getNetwork() {
+        return network;
+    }
+
+    public String getId() {
         return id;
     }
 
@@ -35,11 +33,26 @@ public class Agent {
         return log;
     }
 
-    public void registerLog(Node node){
-        log = log +"," + node.getId() ;
+    private void registerLog(Node node){
+        log = log +"," + node.getName() ;
     }
 
-    public void traverse(TraverseActionEnum action) {
+    public void traverse(int action, int index){
+        switch (action){
+            case 1:
+                traverse(TraverseActionEnum.UP,index);
+                break;
+            case 2:
+                traverse(TraverseActionEnum.DOWN,index);
+                break;
+            case 3:
+                traverse(TraverseActionEnum.STAY,index);
+                break;
+        }
+    }
+
+    public void traverse(TraverseActionEnum action, int index) {
+
         switch (action) {
             case UP:
                 if(currentNode.getToParent() != null)
@@ -49,44 +62,38 @@ public class Agent {
             registerLog(currentNode);
             break;
             case DOWN:
-                if(currentNode.getChildren().size()>0) {
-                    int route = new Random().nextInt(currentNode.getChildren().size());
-                    currentNode = currentNode.getChildren().get(route).getChild();
+                    currentNode = currentNode.getChildren().get(index).getChild();
                     if(!network.checkExploration(currentNode.getToParent())){
                         network.markExplored(currentNode);
                     }
                     registerLog(currentNode);
-                }
-                break;
-            case EXPLORED:
                 break;
             case STAY:
-                registerLog(currentNode);
-                break;
-            case UNEXPLORED:
-                Edge nextNode = getCurrentNode().getChildren().stream().filter(edge -> !network.checkExploration(edge)).findFirst().orElse(null);
-                //currentNode.getChildren().forEach((edge -> {
-                //  if(!network.checkExploration(edge)){
-                currentNode = nextNode.getChild();
-                registerLog(currentNode);
-                network.markExplored(currentNode);
+                if(currentNode!=network.getRoot()) {
+                    registerLog(currentNode);
+                }
                 break;
         }
-        //}));
-               /* Edge nextRoute = currentNode.getChildren().stream().filter(edge -> !network.checkExploration(edge)).findFirst().orElse(null);
-                if(nextRoute!=null){
-                    currentNode = nextRoute.getChild();
-                    registerLog(currentNode);
-                    network.markExplored(currentNode);
-                }*/
+
     }
 
-
-    public int getNumberOfAgentsHere() {
-        return numberOfAgentsHere;
+    /**
+     * Method to check if any unexplored nodes exists amongst specified node's children
+     * @param checkNode the node to be checked
+     * @return the edge to the unexplored node
+     */
+    public Edge getUnexploredNode(Node checkNode){
+        return checkNode.getChildren().stream().filter(edge -> !network.getCurrentTree().containsKey(edge.getChild().getId())).findFirst().orElse(null);
     }
 
-    public void setNumberOfAgentsHere(int numberOfAgentsHere) {
-        this.numberOfAgentsHere = numberOfAgentsHere;
+    /**
+     * Method to check if any unexplored nodes exists amongst the current node's children
+     * @return the edge to the unexplored node
+     */
+    public Edge getUnexploredNode(){
+        return getCurrentNode().getChildren().stream().filter(edge -> !network.getCurrentTree().containsKey(edge.getChild().getId())).findFirst().orElse(null);
     }
+
+    public abstract void determinePath();
+
 }

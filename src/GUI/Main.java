@@ -10,7 +10,7 @@ public class Main {
         JFrame frame = new JFrame("Multi-agents visualization");
         frame.setContentPane(new GUI().getPanel());
         frame.pack();
-        frame.setSize(1200,700);
+        frame.setSize(1270,700);
         frame.setVisible(true);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         
