@@ -22,11 +22,14 @@ class TimedTraversalSingle extends Thread {
     private JTabbedPane mapsPane;
     private int time;
     private boolean showNodes;
+    private int currentRouteStep;
     private JPanel agentRoutePane;
+    private boolean continueWhile=true;
 
-    public TimedTraversalSingle(Agent agent, JPanel agentRoutePane, JTabbedPane mapsPane, int time, boolean showNodes) {
+    public TimedTraversalSingle(Agent agent, int currentRouteStep, JPanel agentRoutePane, JTabbedPane mapsPane, int time, boolean showNodes) {
 
         this.agent = agent;
+        this.currentRouteStep = currentRouteStep;
         this.agentRoutePane = agentRoutePane;
         this.mapsPane = mapsPane;
 
@@ -38,15 +41,15 @@ class TimedTraversalSingle extends Thread {
         Graph<String, String> g = new DelegateForest<>();
         mapsPane.setSelectedIndex(2);
         String[] log = agent.sendLog().split(",");
-        int step = 0;
-        String lastChar = log[step];
-        g.addVertex(log[step]);
+
+        String lastChar = log[currentRouteStep];
+        g.addVertex(log[currentRouteStep]);
 
 
 
         do {
-            step++;
-            String logged = log[step];
+
+            String logged = log[currentRouteStep];
             if (!lastChar.equals(logged)) {
                 if (!g.containsVertex(logged)) {
                     g.addVertex(logged);
@@ -55,9 +58,11 @@ class TimedTraversalSingle extends Thread {
 
             }
             lastChar = logged;
-            if (!g.containsEdge(log[step - 1] + "-" + log[step])
-                && !g.containsEdge(log[step] + "-" + log[step - 1])){
-                g.addEdge(log[step - 1] + "-" + log[step], log[step - 1], log[step]);
+            if(currentRouteStep>0) {
+                if (!g.containsEdge(log[currentRouteStep - 1] + "-" + log[currentRouteStep])
+                        && !g.containsEdge(log[currentRouteStep] + "-" + log[currentRouteStep - 1])) {
+                    g.addEdge(log[currentRouteStep - 1] + "-" + log[currentRouteStep], log[currentRouteStep - 1], log[currentRouteStep]);
+                }
             }
             Layout<String,String> layout3;
             if(log.length<100) {
@@ -73,7 +78,7 @@ class TimedTraversalSingle extends Thread {
 
             Transformer<String, String> transformer = String::valueOf;
             // Transformer maps the vertex number to a vertex property
-            int finalStep = step;
+            int finalStep = currentRouteStep;
             Transformer<String, Paint> vertexColor1 = i -> {
                 if(i.equals(log[finalStep])) return Color.CYAN;
                 else if (i.equals(agent.getNetwork().getRoot().getName())) return Color.GREEN;
@@ -103,7 +108,11 @@ class TimedTraversalSingle extends Thread {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+            currentRouteStep++;
+        } while (currentRouteStep < log.length-1 && continueWhile);
+    }
 
-        } while (step < log.length-1);
+    public void stopWriting() {
+        continueWhile=false;
     }
 }

@@ -41,56 +41,31 @@
                   <text value="Create Agent"/>
                 </properties>
               </component>
-              <vspacer id="98557">
-                <constraints>
-                  <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
-                  <gridbag weightx="0.0" weighty="0.0"/>
-                </constraints>
-              </vspacer>
-              <component id="291a5" class="javax.swing.JButton" binding="btnCreateRules">
-                <constraints>
-                  <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-                  <gridbag weightx="0.0" weighty="0.0"/>
-                </constraints>
-                <properties>
-                  <text value="Create Rule"/>
-                </properties>
-              </component>
-              <component id="8d378" class="javax.swing.JButton" binding="btnCompile">
-                <constraints>
-                  <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-                  <gridbag weightx="0.0" weighty="0.0"/>
-                </constraints>
-                <properties>
-                  <enabled value="false"/>
-                  <text value="Compile"/>
-                </properties>
-              </component>
-              <component id="f11b8" class="javax.swing.JButton" binding="generateTreeButton" default-binding="true">
-                <constraints>
-                  <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-                  <gridbag weightx="0.0" weighty="0.0"/>
-                </constraints>
-                <properties>
-                  <text value="Generate Tree"/>
-                </properties>
-              </component>
               <component id="72b7c" class="javax.swing.JButton" binding="removeRuleButton" default-binding="true">
                 <constraints>
-                  <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                  <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                   <gridbag weightx="0.0" weighty="0.0"/>
                 </constraints>
                 <properties>
                   <text value="Destroy Rule"/>
                 </properties>
               </component>
-              <component id="6fb1d" class="javax.swing.JButton" binding="destroyAgentButton" default-binding="true">
+              <component id="291a5" class="javax.swing.JButton" binding="btnCreateRules">
                 <constraints>
                   <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                   <gridbag weightx="0.0" weighty="0.0"/>
                 </constraints>
                 <properties>
-                  <text value="Destroy Agent"/>
+                  <text value="Create Rule"/>
+                </properties>
+              </component>
+              <component id="f11b8" class="javax.swing.JButton" binding="generateTreeButton" default-binding="true">
+                <constraints>
+                  <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                  <gridbag weightx="0.0" weighty="0.0"/>
+                </constraints>
+                <properties>
+                  <text value="Generate Tree"/>
                 </properties>
               </component>
             </children>
@@ -124,6 +99,7 @@
                 <properties>
                   <preferredSize width="120" height="24"/>
                   <text value="k,t"/>
+                  <toolTipText value="Fill what variables that needs to be valued before tree generation. (written as: variable1,variable2,...,variableX)"/>
                 </properties>
               </component>
               <component id="40f22" class="javax.swing.JLabel">
@@ -144,6 +120,7 @@
                 </constraints>
                 <properties>
                   <text value="Root"/>
+                  <toolTipText value="Name of the Root Rule."/>
                 </properties>
               </component>
               <component id="5c5c9" class="javax.swing.JButton" binding="btnDrawNodes">
@@ -208,7 +185,9 @@
                   </grid>
                   <gridbag weightx="0.0" weighty="0.0"/>
                 </constraints>
-                <properties/>
+                <properties>
+                  <toolTipText value="The values of the variables above. (Written as: varValue1,varValue2,...,varValueX"/>
+                </properties>
               </component>
             </children>
           </grid>
@@ -220,17 +199,6 @@
             <properties/>
             <border type="line" title="Agent Management"/>
             <children>
-              <component id="e9090" class="javax.swing.JTextField" binding="showRouteTxt">
-                <constraints>
-                  <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                    <preferred-size width="150" height="-1"/>
-                  </grid>
-                  <gridbag weightx="0.0" weighty="0.0"/>
-                </constraints>
-                <properties>
-                  <toolTipText value="Specific agent for Route and/or Log"/>
-                </properties>
-              </component>
               <component id="5dffa" class="javax.swing.JButton" binding="btnTraverse">
                 <constraints>
                   <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
@@ -248,39 +216,13 @@
                   <gridbag weightx="0.0" weighty="0.0"/>
                 </constraints>
                 <properties>
+                  <preferredSize width="60" height="24"/>
                   <toolTipText value="Time between steps (ms)"/>
-                </properties>
-              </component>
-              <component id="7cd63" class="javax.swing.JButton" binding="btnShowRoute">
-                <constraints>
-                  <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-                  <gridbag weightx="0.0" weighty="0.0"/>
-                </constraints>
-                <properties>
-                  <text value="Show Route"/>
-                </properties>
-              </component>
-              <component id="1e642" class="javax.swing.JButton" binding="addAgentButton" default-binding="true">
-                <constraints>
-                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-                  <gridbag weightx="0.0" weighty="0.0"/>
-                </constraints>
-                <properties>
-                  <text value="Add Agent"/>
-                </properties>
-              </component>
-              <component id="f525e" class="javax.swing.JButton" binding="removeAgentButton" default-binding="true">
-                <constraints>
-                  <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-                  <gridbag weightx="0.0" weighty="0.0"/>
-                </constraints>
-                <properties>
-                  <text value="Remove Agent"/>
                 </properties>
               </component>
               <component id="7f2a0" class="javax.swing.JButton" binding="btnGetLog">
                 <constraints>
-                  <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                  <grid row="5" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                   <gridbag weightx="0.0" weighty="0.0"/>
                 </constraints>
                 <properties>
@@ -294,6 +236,54 @@
                 </constraints>
                 <properties>
                   <text value="Single Step Traverse"/>
+                </properties>
+              </component>
+              <component id="1e642" class="javax.swing.JButton" binding="addAgentButton" default-binding="true">
+                <constraints>
+                  <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                  <gridbag weightx="0.0" weighty="0.0"/>
+                </constraints>
+                <properties>
+                  <text value="Add Agent"/>
+                </properties>
+              </component>
+              <component id="e9090" class="javax.swing.JTextField" binding="showRouteTxt">
+                <constraints>
+                  <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                    <preferred-size width="150" height="-1"/>
+                  </grid>
+                  <gridbag weightx="0.0" weighty="0.0"/>
+                </constraints>
+                <properties>
+                  <preferredSize width="60" height="24"/>
+                  <toolTipText value="Specific agent for Route and/or Log"/>
+                </properties>
+              </component>
+              <component id="6f47a" class="javax.swing.JLabel">
+                <constraints>
+                  <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <gridbag weightx="0.0" weighty="0.0"/>
+                </constraints>
+                <properties>
+                  <text value="Single Route: "/>
+                </properties>
+              </component>
+              <component id="acaf9" class="javax.swing.JButton" binding="routeBackwardsButton" default-binding="true">
+                <constraints>
+                  <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                  <gridbag weightx="0.0" weighty="0.0"/>
+                </constraints>
+                <properties>
+                  <text value="Route Backwards"/>
+                </properties>
+              </component>
+              <component id="7cd63" class="javax.swing.JButton" binding="btnShowRoute">
+                <constraints>
+                  <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                  <gridbag weightx="0.0" weighty="0.0"/>
+                </constraints>
+                <properties>
+                  <text value="Route Forward"/>
                 </properties>
               </component>
             </children>

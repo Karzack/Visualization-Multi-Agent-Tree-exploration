@@ -17,6 +17,7 @@ import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.DefaultModalGraphMouse;
 import edu.uci.ics.jung.visualization.control.ModalGraphMouse;
 import org.apache.commons.collections15.Transformer;
+import sun.management.resources.agent;
 
 import javax.swing.*;
 import java.awt.*;
@@ -51,7 +52,6 @@ public class GUI extends JPanel {
     private JTextField txtTime;
     private JButton btnShowRoute;
     private JButton resetButton;
-    private JButton btnCompile;
     private JButton btnInstance;
     private JButton btnDrawNodes;
     private JLabel fastestAgent;
@@ -70,9 +70,8 @@ public class GUI extends JPanel {
     private JTextField txtTreeName;
     private JTextField txtVariableValues;
     private JButton addAgentButton;
-    private JButton removeAgentButton;
-    private JButton destroyAgentButton;
     private JButton singleStepTraverseButton;
+    private JButton routeBackwardsButton;
 
     private RuleParser ruleParser;
     private VisualizationViewer<String, String> vv3;
@@ -81,6 +80,9 @@ public class GUI extends JPanel {
     private ArrayList<String> treeList;
     private final File ruleFile;
     private TimedTraversal timedTraversalThread;
+    private TimedTraversalSingle routeTraversalThread;
+    private int currentRouteStep=0;
+    private Agent routeAgent;
 
 
     public GUI() {
@@ -137,16 +139,21 @@ public class GUI extends JPanel {
             agentRoutePane.removeAll();
             mapsPane.setSelectedIndex(2);
             //nodeTxt = nodes.getText();
-
-            Agent agent = agentNetwork.getAgent(showRouteTxt.getText());
-            String[] log = agent.sendLog().split(",");
+            if(routeAgent==null){
+                routeAgent = agentNetwork.getAgent(showRouteTxt.getText());
+                currentRouteStep = 0;
+            }else if(!routeAgent.equals(agentNetwork.getAgent(showRouteTxt.getText()))){
+                routeAgent = agentNetwork.getAgent(showRouteTxt.getText());
+                currentRouteStep = 0;
+            }
+            String[] log = routeAgent.sendLog().split(",");
             Graph<String, String> g = new DelegateForest<>();
-            if (agent != null) {
-                if(!timedSecCheckBox.isSelected()) {
+            currentRouteStep++;
+            if (routeAgent != null) {
                     mapsPane.setSelectedIndex(2);
                     String lastChar = log[0];
                     g.addVertex(lastChar);
-                    for (int i = 1; i < log.length; i++) {
+                    for (int i = 0; i < log.length && i<=currentRouteStep; i++) {
                         String logged = log[i];
                         if (!lastChar.equals(logged)) {
                             if (!g.containsVertex(logged)) {
@@ -157,7 +164,7 @@ public class GUI extends JPanel {
                         }
                         lastChar = logged;
                     }
-                    for (int j = 1; j < log.length; j++) {
+                    for (int j = 1; j < log.length && j<= currentRouteStep; j++) {
                         if (!g.containsEdge(log[j - 1] + "-" + log[j])
                                 && !g.containsEdge(log[j] + "-" + log[j - 1])) {
                             g.addEdge(log[j - 1] + "-" + log[j], log[j - 1], log[j]);
@@ -174,10 +181,11 @@ public class GUI extends JPanel {
 
                     Transformer<String, String> transformer = String::valueOf;
                     // Transformer maps the vertex number to a vertex property
-                    Transformer<String, Paint> vertexColor1 = i -> {
-                        if (i.equals("0")) return Color.GREEN;
-                        return Color.RED;
-                    };
+                Transformer<String, Paint> vertexColorNodes = i -> {
+                    if (i.equals(log[currentRouteStep])) return Color.CYAN;
+                    else if (i.equals("0") || i.equals(txtRoot.getText())) return Color.GREEN;
+                    return Color.RED;
+                };
                     Transformer<String, Paint> edgesColor1 = i -> {
                         if (i.equals("")) return Color.GREEN;
                         return Color.RED;
@@ -190,21 +198,16 @@ public class GUI extends JPanel {
                     }
                     vv3.getRenderContext().setVertexShapeTransformer(vertexSize1);
                     //vv3.getRenderer().getVertexLabelRenderer().setPosition(Renderer.VertexLabel.Position.CNTR);
-                    vv3.getRenderContext().setVertexFillPaintTransformer(vertexColor1);
+                    vv3.getRenderContext().setVertexFillPaintTransformer(vertexColorNodes);
                     vv3.getRenderContext().setEdgeDrawPaintTransformer(edgesColor1);
 
                     agentRoutePane.add(vv3);
                     agentRoutePane.requestFocus();
                     agentRoutePane.updateUI();
                 }
-                else{
-                    int time = Integer.parseInt(txtTime.getText());
-                    new TimedTraversalSingle(agent,agentRoutePane,mapsPane,time,showNodeLabelsCheckBox.isSelected()).start();
-                }
+              //  else{
 
-            }else {
-
-            }
+               // }*/
         });
 
         resetButton.addActionListener(e -> {
@@ -230,35 +233,35 @@ public class GUI extends JPanel {
         });
 
         btnTraverse.addActionListener((ActionEvent e) -> {
-            if(timedTraversalThread == null || !timedTraversalThread.isAlive()){
-                int time = Integer.parseInt(txtTime.getText());
-                timedTraversalThread = new TimedTraversal(trad, agentNetwork, mapsPane, agentsMap,time,fastestAgent,slowestAgent, agentTimeStepCounter,agentTimeStepCounterNumber,showNodeLabelsCheckBox.isSelected());
-                timedTraversalThread.start();
-                btnTraverse.setText("Stop Timed Traversal");
+            if(timedTraversalThread == null || !timedTraversalThread.isAlive() && routeTraversalThread == null || !routeTraversalThread.isAlive()){
+                if(mapsPane.getSelectedIndex()!=2) {
+                    int time = Integer.parseInt(txtTime.getText());
+                    timedTraversalThread = new TimedTraversal(trad, agentNetwork, mapsPane, agentsMap, time, fastestAgent, slowestAgent, agentTimeStepCounter, agentTimeStepCounterNumber, showNodeLabelsCheckBox.isSelected());
+                    timedTraversalThread.start();
+                    btnTraverse.setText("Stop Timed Traversal");
+                }else {
+                    int time = Integer.parseInt(txtTime.getText());
+                    if(routeAgent==null){
+                        routeAgent = agentNetwork.getAgent(showRouteTxt.getText());
+                        currentRouteStep = 0;
+                    }else if(!routeAgent.equals(agentNetwork.getAgent(showRouteTxt.getText()))){
+                        routeAgent = agentNetwork.getAgent(showRouteTxt.getText());
+                        currentRouteStep=0;
+                    }
+                    routeTraversalThread = new TimedTraversalSingle(routeAgent,currentRouteStep,agentRoutePane,mapsPane,time,showNodeLabelsCheckBox.isSelected());
+                    routeTraversalThread.start();
+                    btnTraverse.setText("Stop Timed Traversal");
+                }
             }else if(timedTraversalThread.isAlive()){
-                timedTraversalThread.stopWriting();
+                    timedTraversalThread.stopWriting();
+                    btnTraverse.setText("Start Timed Traversal");
+            }else if(routeTraversalThread.isAlive()){
+                routeTraversalThread.stopWriting();
                 btnTraverse.setText("Start Timed Traversal");
             }
         });
 
-        btnCompile.addActionListener(e -> {
-            ruleParser.compileActionList();
-            JOptionPane.showMessageDialog(null,"Compiling complete!\nRestart application to use this tree");
-        });
 
-        /*btnInstance.addActionListener(e -> {
-            try {
-                ruleParser.instanciateActionList();
-                JOptionPane.showMessageDialog(null,"Tree is ready to be drawn!");
-                btnDrawNodes.setEnabled(true);
-            } catch (ClassNotFoundException e1) {
-                e1.printStackTrace();
-                JOptionPane.showMessageDialog(null,"No Class found!");
-            } catch (MalformedURLException e1) {
-                e1.printStackTrace();
-                JOptionPane.showMessageDialog(null,"URL is not correct!");
-            }
-        });*/
 
         btnDrawNodes.addActionListener(e -> {
             String rules="";
@@ -418,6 +421,79 @@ public class GUI extends JPanel {
             AddAgentDialog dialog = new AddAgentDialog(this,agentNetwork,agentTypeList,new File("src/AgentsList"));
             dialog.pack();
             dialog.setVisible(true);
+        });
+        routeBackwardsButton.addActionListener(e -> {
+            agentRoutePane.removeAll();
+            mapsPane.setSelectedIndex(2);
+            //nodeTxt = nodes.getText();
+            if(routeAgent==null){
+                routeAgent = agentNetwork.getAgent(showRouteTxt.getText());
+                currentRouteStep = 0;
+            }else if(!routeAgent.equals(agentNetwork.getAgent(showRouteTxt.getText()))){
+                routeAgent = agentNetwork.getAgent(showRouteTxt.getText());
+                currentRouteStep = 1;
+            }
+            if(currentRouteStep>0) {
+                String[] log = routeAgent.sendLog().split(",");
+                Graph<String, String> g = new DelegateForest<>();
+                currentRouteStep--;
+                if (routeAgent != null) {
+                    mapsPane.setSelectedIndex(2);
+                    String lastChar = log[0];
+                    g.addVertex(lastChar);
+                    for (int i = 0; i < log.length && i <= currentRouteStep; i++) {
+                        String logged = log[i];
+                        if (!lastChar.equals(logged)) {
+                            if (!g.containsVertex(logged)) {
+                                g.addVertex(logged);
+
+                            }
+
+                        }
+                        lastChar = logged;
+                    }
+                    for (int j = 1; j < log.length && j <= currentRouteStep; j++) {
+                        if (!g.containsEdge(log[j - 1] + "-" + log[j])
+                                && !g.containsEdge(log[j] + "-" + log[j - 1])) {
+                            g.addEdge(log[j - 1] + "-" + log[j], log[j - 1], log[j]);
+                        }
+                    }
+
+
+                    Layout<String, String> layout3 = new RadialTreeLayout<>((Forest<String, String>) g);
+                    vv3 = new VisualizationViewer<>(layout3);
+
+                    final DefaultModalGraphMouse<String, Number> graphMouse3 = new DefaultModalGraphMouse<>();
+                    vv3.setGraphMouse(graphMouse3);
+                    graphMouse3.setMode(ModalGraphMouse.Mode.PICKING);
+
+                    Transformer<String, String> transformer = String::valueOf;
+                    // Transformer maps the vertex number to a vertex property
+                    Transformer<String, Paint> vertexColorNodes = i -> {
+                        if (i.equals(log[currentRouteStep])) return Color.CYAN;
+                        else if (i.equals("0") || i.equals(txtRoot.getText())) return Color.GREEN;
+                        return Color.RED;
+                    };
+                    Transformer<String, Paint> edgesColor1 = i -> {
+                        if (i.equals("")) return Color.GREEN;
+                        return Color.RED;
+                    };
+
+                    Transformer<String, Shape> vertexSize1 = i -> (Ellipse2D) new Ellipse2D.Double(-4, -4, 8, 8);
+
+                    if (showNodeLabelsCheckBox.isSelected()) {
+                        vv3.getRenderContext().setVertexLabelTransformer(transformer);
+                    }
+                    vv3.getRenderContext().setVertexShapeTransformer(vertexSize1);
+                    //vv3.getRenderer().getVertexLabelRenderer().setPosition(Renderer.VertexLabel.Position.CNTR);
+                    vv3.getRenderContext().setVertexFillPaintTransformer(vertexColorNodes);
+                    vv3.getRenderContext().setEdgeDrawPaintTransformer(edgesColor1);
+
+                    agentRoutePane.add(vv3);
+                    agentRoutePane.requestFocus();
+                    agentRoutePane.updateUI();
+                }
+            }
         });
     }
 
